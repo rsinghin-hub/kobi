@@ -81,9 +81,16 @@ header.top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--p
 .bar{display:flex;align-items:center;gap:18px;height:68px}
 .brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--display);font-weight:750;font-size:1.6rem;color:var(--teal);letter-spacing:-.03em}
 .brand svg{width:34px;height:34px}
-nav.main{display:flex;gap:4px;margin-left:12px}
+nav.main{display:flex;gap:4px;margin-left:12px;align-items:center}
 nav.main a{padding:8px 12px;border-radius:999px;text-decoration:none;font-weight:500;color:var(--muted)}
 nav.main a:hover,nav.main a.on{color:var(--ink);background:var(--teal-soft)}
+nav.main details.book{position:relative}
+nav.main details.book>summary{list-style:none;cursor:pointer;padding:8px 12px;border-radius:999px;font-weight:500;color:var(--muted)}
+nav.main details.book>summary::-webkit-details-marker{display:none}
+nav.main details.book>summary::marker{content:""}
+nav.main details.book>summary:hover,nav.main details.book>summary.on{color:var(--ink);background:var(--teal-soft)}
+nav.main details.book>.sub{display:none}
+nav.main details.book[open]>.sub{position:absolute;top:calc(100% + 8px);left:0;min-width:220px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;box-shadow:0 18px 40px -22px rgba(20,60,55,.5);z-index:50}
 .bar .spacer{flex:1}
 .erbtn{display:inline-flex;align-items:center;gap:8px;background:var(--er);color:#fff;text-decoration:none;font-weight:700;padding:9px 16px;border-radius:999px;font-size:.95rem}
 .erbtn .lbl-long{white-space:pre}
@@ -95,9 +102,10 @@ nav.main a:hover,nav.main a.on{color:var(--ink);background:var(--teal-soft)}
 .petpill{text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:4px 12px 4px 4px;cursor:pointer;font-weight:600}
 .petpill img{width:32px;height:32px;border-radius:50%;object-fit:cover}
 .menu-toggle{display:none}
-@media (max-width:960px){
-  nav.main{display:none;position:absolute;left:0;right:0;top:68px;flex-direction:column;background:var(--paper);border-bottom:1px solid var(--line);padding:12px 24px 18px;margin:0}
+@media (max-width:1240px){
+  nav.main{display:none;position:absolute;left:0;right:0;top:68px;flex-direction:column;align-items:stretch;background:var(--paper);border-bottom:1px solid var(--line);padding:12px 24px 18px;margin:0}
   nav.main.open{display:flex}
+  nav.main details.book>.sub,nav.main details.book[open]>.sub{position:static;display:flex;flex-direction:column;min-width:0;background:transparent;border:0;box-shadow:none;padding:0 0 4px 12px}
   .menu-toggle{display:inline-flex}
 }
 @media (max-width:560px){.erbtn .lbl-long{display:none}.petpill span{display:none}.petpill{padding:4px}.bar{gap:10px}}
@@ -473,16 +481,36 @@ function signIn(phone){
 }
 
 /* ---------- header and footer ---------- */
-const NAV = [["#/walking","Walks"],["#/boarding","Day boarding"],["#/vet","Vets"],["#/shop","Shop"],["#/spokes","Spokes"],["#/er","ER hub"]];
 function renderBar(){
   const r = location.hash || "#/";
   const count = S.cart.reduce((a, c) => a + c.q, 0);
   const p = pet();
+  const link = (href, label, on) => `<a href="${href}" class="${on ? "on" : ""}">${label}</a>`;
+  const homeOn = r === "#/" || r === "#";
+  const bookOn = /^#\/(walking|boarding|vet)(\/|$)/.test(r);
+  const shopOn = r.startsWith("#/shop") || r.startsWith("#/product");
+  const centreOn = r.startsWith("#/spokes") || r.startsWith("#/spoke/");
+  const petsOn = r.startsWith("#/pets") || r.startsWith("#/passport");
+  const bookingsOn = r.startsWith("#/account") || r.startsWith("#/track");
   $("#bar").innerHTML = `
     <a class="brand" href="#/" aria-label="Kobi home">${PAW}<span>kobi</span></a>
-    <nav class="main ${S.menu ? "open" : ""}" aria-label="Main">${NAV.map(([h, l]) => `<a href="${h}" class="${r.startsWith(h) ? "on" : ""}">${l}</a>`).join("")}<a href="#/help" class="${r.startsWith("#/help") ? "on" : ""}">Help</a></nav>
+    <nav class="main ${S.menu ? "open" : ""}" aria-label="Main">
+      ${link("#/", "Home", homeOn)}
+      <details class="book">
+        <summary class="${bookOn ? "on" : ""}">Book a Service</summary>
+        <div class="sub">
+          ${link("#/walking", "Pet walking", r.startsWith("#/walking"))}
+          ${link("#/boarding", "Day boarding", r.startsWith("#/boarding"))}
+          ${link("#/vet", "Vet teleconsult", r.startsWith("#/vet"))}
+        </div>
+      </details>
+      ${link("#/shop", "Shop", shopOn)}
+      ${link("#/spokes", "Pet Care Centres", centreOn)}
+      ${link("#/pets", "My Pets", petsOn)}
+      ${link("#/account", "My Bookings", bookingsOn)}
+    </nav>
     <span class="spacer"></span>
-    <a class="erbtn" href="#/emergency"><span class="pulse"></span>ER<span class="lbl-long">&nbsp;24x7</span></a>
+    <a class="erbtn" href="#/emergency"><span class="pulse"></span>ER<span class="lbl-long">&nbsp;24/7</span></a>
     ${p ? `<a class="petpill" href="#/pets" title="Active pet"><img src="${IMG[p.img] || IMG.p_indie}" alt=""><span>${esc(p.name)}</span></a>` : ""}
     <a class="iconbtn" href="#/cart" aria-label="Cart, ${count} items">${I.cart}${count ? `<span class="badge">${count}</span>` : ""}</a>
     <a class="iconbtn" href="#/account" aria-label="Account">${I.user}</a>
@@ -493,9 +521,9 @@ function renderFoot(){
     <div><a class="brand" href="#/" style="display:inline-flex">${PAW}<span>kobi</span></a>
       <p class="muted small" style="margin-top:10px;max-width:38ch">Kobi New Delhi. Pay per use, no membership needed. This is a clickable prototype: prices, places and people are samples.</p>
       <button class="btn ghost sm" data-a="reset">Reset demo</button></div>
-    <div><b>Services</b><a href="#/walking">Pet walking</a><a href="#/boarding">Day boarding</a><a href="#/vet">Vet teleconsult</a><a href="#/er">24x7 ER hub</a></div>
-    <div><b>Shop and visit</b><a href="#/shop">Food, toys and supplies</a><a href="#/spokes">Find a spoke</a><a href="#/book/groom">Grooming and spa</a></div>
-    <div><b>You</b><a href="#/account">Bookings and orders</a><a href="#/pets">My pets</a><a href="#/help">Help and FAQ</a></div>`;
+    <div><b>Services</b><a href="#/walking">Pet walking</a><a href="#/boarding">Day boarding</a><a href="#/vet">Vet teleconsult</a><a href="#/er">Kobi 24/7 Emergency Hospital</a></div>
+    <div><b>Shop and visit</b><a href="#/shop">Food, toys and supplies</a><a href="#/spokes">Find a Pet Care Centre Near Me</a><a href="#/book/groom">Grooming and spa</a></div>
+    <div><b>You</b><a href="#/account">My Bookings</a><a href="#/pets">My Pets</a><a href="#/help">Help and FAQ</a></div>`;
 }
 
 /* ---------- pages ---------- */
@@ -516,34 +544,34 @@ P.home = () => {
     </div>
     <figure class="hero-img"><img src="${IMG.hero}" alt="A pet parent on a sofa with her dog and cat, holding a phone">${floatCard}</figure>
   </section>
-  ${overdue ? `<section class="wrap"><div class="reminder"><img src="${IMG[p.img]}" alt=""><div style="flex:1"><b>${esc(p.name)}'s ${overdue.name.toLowerCase()} was due on ${overdue.due}.</b><div class="muted small">It takes ten minutes at any spoke clinic.</div></div><a class="btn primary sm" href="#/book/vaccine">Book at a spoke</a></div></section>` : ""}
+  ${overdue ? `<section class="wrap"><div class="reminder"><img src="${IMG[p.img]}" alt=""><div style="flex:1"><b>${esc(p.name)}'s ${overdue.name.toLowerCase()} was due on ${overdue.due}.</b><div class="muted small">It takes ten minutes at any Pet Care Centre.</div></div><a class="btn primary sm" href="#/book/vaccine">Book at a Centre</a></div></section>` : ""}
   <section class="wrap section">
     <div class="section-head"><h2>What does ${p ? esc(p.name) : "your pet"} need today?</h2></div>
     <div class="tiles">
       ${tile("#/walking", "walk", "Pet walking", "Live GPS route, photos and a report after every walk.", `From ${rs(299)}`)}
-      ${tile("#/boarding", "board", "Day boarding", "A day of play and rest at a spoke, with photo updates.", `${rs(BOARD_PRICE)} a day`)}
+      ${tile("#/boarding", "board", "Day boarding", "A day of play and rest at a Pet Care Centre, with photo updates.", `${rs(BOARD_PRICE)} a day`)}
       ${tile("#/vet", "tele", "Talk to a vet", "Video call with a Kobi vet, day or night.", `${rs(TELE_PRICE)} a call`)}
-      ${tile("#/spokes", "spoke", "Neighbourhood spokes", "Clinic, café, ice cream, day stay and shop near you.", "4 in South Delhi")}
-      ${tile("#/book/groom", "groom", "Grooming and spa", "Bath, trim and nails at the flagship hub.", `From ${rs(999)}`)}
-      ${tile("#/shop", "x_food", "Food and supplies", "Delivered in about 2 hours, or collect at a spoke.", "Pay per order", "shop")}
+      ${tile("#/spokes", "spoke", "Pet Care Centres", "Clinic, café, ice cream, day stay and shop near you.", "4 in South Delhi")}
+      ${tile("#/book/groom", "groom", "Grooming and spa", "Bath, trim and nails at the Kobi 24/7 Emergency Hospital.", `From ${rs(999)}`)}
+      ${tile("#/shop", "x_food", "Food and supplies", "Delivered in about 2 hours, or collect at a Pet Care Centre.", "Pay per order", "shop")}
     </div>
   </section>
   <section class="wrap"><div class="erband">
     <div class="copy"><h2>If it's an emergency, come straight to the Kobi ER.</h2>
-      <p>Triage, surgery and ICU around the clock at the flagship hub. ${hasPassport() ? `ER vets will see ${esc(p.name)}'s full history the moment you arrive.` : "With a Pet Passport, ER vets see your pet's history the moment you arrive."}</p>
-      <div class="row"><a class="btn er" href="tel:${ER_PHONE}">Call the ER</a><a class="btn ghost" style="color:#fff;border-color:#4C7D77" href="#/er">About the hub</a></div></div>
-    <img src="${IMG.erhub}" alt="The Kobi 24x7 ER Center at dusk">
+      <p>Triage, surgery and ICU around the clock at the Kobi 24/7 Emergency Hospital. ${hasPassport() ? `ER vets will see ${esc(p.name)}'s full history the moment you arrive.` : "With a Pet Passport, ER vets see your pet's history the moment you arrive."}</p>
+      <div class="row"><a class="btn er" href="tel:${ER_PHONE}">Call the ER</a><a class="btn ghost" style="color:#fff;border-color:#4C7D77" href="#/er">About the hospital</a></div></div>
+    <img src="${IMG.erhub}" alt="The Kobi 24/7 Emergency Hospital at dusk">
   </div></section>
   <section class="wrap section">
-    <div class="section-head"><h2>Spokes near you</h2><a href="#/spokes">See all on the map</a></div>
+    <div class="section-head"><h2>Pet Care Centres near you</h2><a href="#/spokes">See all on the map</a></div>
     <div class="spokes">${SPOKES.map(spokeCard).join("")}</div>
   </section>
   ${hasPassport() ? "" : `<section class="wrap"><div class="passport-band"><img src="${IMG.i_passport}" alt="">
     <div><h2>A Pet Passport is optional, and useful.</h2><p class="muted" style="max-width:56ch">Keep vaccines, allergies, diet and vet visits in one record. Bookings fill themselves in, reminders arrive on time, and Kobi vets see the history before they meet your pet. You can book every service without one.</p>
-    <a class="btn primary" href="#/pets">${S.pets.length ? "Create a Passport" : "Add your pet"}</a></div></div></section>`}`;
+    <a class="btn primary" href="#/pets">${S.pets.length ? "Create a Pet Health Profile" : "Add your pet"}</a></div></div></section>`}`;
 };
 function tile(h, img, t, d, price, cls = ""){ return `<a class="tile ${cls}" href="${h}"><img src="${IMG[img]}" alt=""><div class="t"><h3>${t}</h3><p class="muted small" style="margin-bottom:6px">${d}</p><span class="price">${price}</span></div></a>`; }
-function spokeCard(s){ return `<article class="spoke-card"><img src="${IMG[s.img]}" alt=""><div class="t"><h3>${s.name}</h3><div class="muted small">${s.addr}, ${s.dist} away. Open ${s.hours}.</div><div class="tags">${SPOKE_TAGS.map(t => `<span class="tag">${t}</span>`).join("")}</div><div class="row"><a class="btn primary sm" href="#/spoke/${s.id}">View spoke</a><a class="btn ghost sm" href="#/spoke/${s.id}">Directions</a></div></div></article>`; }
+function spokeCard(s){ return `<article class="spoke-card"><img src="${IMG[s.img]}" alt=""><div class="t"><h3>${s.name}</h3><div class="muted small">${s.addr}, ${s.dist} away. Open ${s.hours}.</div><div class="tags">${SPOKE_TAGS.map(t => `<span class="tag">${t}</span>`).join("")}</div><div class="row"><a class="btn primary sm" href="#/spoke/${s.id}">Explore Centre</a><a class="btn ghost sm" href="#/spoke/${s.id}">Directions</a></div></div></article>`; }
 
 const INC = (items) => `<ul class="includes">${items.map(i => `<li>${I.check}<span>${i}</span></li>`).join("")}</ul>`;
 
@@ -570,7 +598,7 @@ P.walking = () => {
       <div class="wlabel">Pickup time</div>
       <div class="slots">${times.map(t => `<button class="chip ${s.time === t ? "on" : ""}" data-a="pick" data-v="walk.time:${t}">${t}</button>`).join("")}</div>
       <label class="field" style="margin-top:16px"><span>Notes for the walker</span><textarea class="input" id="walkNotes" placeholder="Anything the walker should know?">${esc(notes)}</textarea>
-      ${hasPassport() ? `<div class="hint">Filled in from ${esc(p.name)}'s Passport.</div>` : ""}</label>
+      ${hasPassport() ? `<div class="hint">Filled in from ${esc(p.name)}'s Pet Health Profile.</div>` : ""}</label>
       <div class="total"><span>Total, taxes included</span><b>${rs(WALK_PRICE[s.dur])}</b></div>
       <button class="btn primary block" data-a="draftWalk" ${s.time ? "" : "disabled"}>${s.time ? "Continue to checkout" : "Pick a time to continue"}</button>
       <p class="hint" style="text-align:center">Free cancellation up to 2 hours before.</p>
@@ -579,7 +607,7 @@ P.walking = () => {
 
 P.boarding = () => {
   const s = S.sel.board;
-  const where = [...SPOKES.map(x => [x.id, x.name]), ["hub", "Flagship hub"]];
+  const where = [...SPOKES.map(x => [x.id, x.name]), ["hub", "Kobi 24/7 Emergency Hospital"]];
   return `<div class="wrap svc">
     <div><div class="crumbs"><a href="#/">Home</a> / Day boarding</div>
       <h1>Day boarding</h1>
@@ -587,7 +615,7 @@ P.boarding = () => {
       <img class="svc-hero" src="${IMG.board}" alt="Dogs playing in a bright day-stay room with a caregiver">
       ${INC(["Supervised play in small groups", "Meals at your usual times", "Photo updates during the day", "Quiet rest area for naps"])}
       <h2>Before the first stay</h2>
-      <p class="muted">A rabies vaccine within the last 12 months is needed. ${hasPassport() ? `We'll check ${esc(petName())}'s Passport.` : "Add a photo of the vaccine card at checkout, or show it at drop-off."}</p>
+      <p class="muted">A rabies vaccine within the last 12 months is needed. ${hasPassport() ? `We'll check ${esc(petName())}'s Pet Health Profile.` : "Add a photo of the vaccine card at checkout, or show it at drop-off."}</p>
       <div class="gallery"><img src="${IMG.play}" alt="Two dogs in the play area"><img src="${IMG.s_care}" alt="Kavya, a caregiver"><img src="${IMG.i_booked}" alt=""></div>
     </div>
     <aside class="widget" aria-label="Book day boarding">
@@ -606,9 +634,9 @@ const REDFLAG = /(not breathing|can'?t breathe|cannot breathe|breathing (hard|fa
 P.vet = () => {
   const v = S.vetCheck;
   let result = "";
-  if (v === "red") result = `<div class="emerg-box"><h3 style="color:var(--er)">This could be an emergency.</h3><p>Don't wait for a video call. Call the Kobi ER now and head to the hub.</p><div class="row"><a class="btn er" href="tel:${ER_PHONE}">Call the ER</a><a class="btn ghost" href="#/emergency">Directions</a></div></div>`;
+  if (v === "red") result = `<div class="emerg-box"><h3 style="color:var(--er)">This could be an emergency.</h3><p>Don't wait for a video call. Call the Kobi ER now and head to the Kobi 24/7 Emergency Hospital.</p><div class="row"><a class="btn er" href="tel:${ER_PHONE}">Call the ER</a><a class="btn ghost" href="#/emergency">Directions</a></div></div>`;
   else if (v === "ok") result = `
-    <div class="option"><b>Video consult now</b><div class="muted small">Next vet free in about 6 minutes. ${rs(TELE_PRICE)} per call, credited if you're seen at a spoke or the ER within 48 hours.</div><button class="btn primary sm" style="margin-top:10px" data-a="draftTele">Start a video consult</button></div>
+    <div class="option"><b>Video consult now</b><div class="muted small">Next vet free in about 6 minutes. ${rs(TELE_PRICE)} per call, credited if you're seen at a Pet Care Centre or the ER within 48 hours.</div><button class="btn primary sm" style="margin-top:10px" data-a="draftTele">Start a video consult</button></div>
     <div class="option"><b>Clinic visit today</b><div class="muted small">Kobi Hauz Khas has slots this afternoon. Check-up ${rs(499)}.</div><a class="btn ghost sm" style="margin-top:10px" href="#/book/checkup">Book a clinic slot</a></div>`;
   return `<div class="wrap svc">
     <div><div class="crumbs"><a href="#/">Home</a> / Vet teleconsult</div>
@@ -621,7 +649,7 @@ P.vet = () => {
     </div>
     <aside class="widget" aria-label="Start a consult">
       <h3>What's going on?</h3>
-      <p class="muted small">${hasPassport() ? `The vet will see ${esc(petName())}'s Passport before the call.` : "Tell us in a sentence or two. A photo helps too."}</p>
+      <p class="muted small">${hasPassport() ? `The vet will see ${esc(petName())}'s Pet Health Profile before the call.` : "Tell us in a sentence or two. A photo helps too."}</p>
       <textarea class="input" id="concern" placeholder="For example: vomited twice since this morning, still drinking water">${esc(S.vetConcern || "")}</textarea>
       <button class="btn primary block" style="margin-top:12px" data-a="vetCheck">See what to do</button>
       ${result}
@@ -629,21 +657,21 @@ P.vet = () => {
 };
 
 P.spokes = () => `<div class="wrap" style="padding-top:30px">
-  <div class="crumbs"><a href="#/">Home</a> / Spokes</div><h1>Find a Kobi spoke in New Delhi</h1>
-  <p class="lede">Compact neighbourhood stores with a clinic for check-ups and vaccines, a café and ice cream bar, day stay, a play area and a shop. Complex cases go to the flagship hub.</p>
+  <div class="crumbs"><a href="#/">Home</a> / Pet Care Centres</div><h1>Find a Pet Care Centre in New Delhi</h1>
+  <p class="lede">Compact neighbourhood stores with a clinic for check-ups and vaccines, a café and ice cream bar, day stay, a play area and a shop. Complex cases go to the Kobi 24/7 Emergency Hospital.</p>
   ${mapSvg("spokes")}
   <div class="spokes" style="margin-top:24px">${SPOKES.map(spokeCard).join("")}</div></div>`;
 
 P.spoke = id => {
   const s = SPOKES.find(x => x.id === id) || SPOKES[0];
   return `<div class="wrap" style="padding-top:30px">
-    <div class="crumbs"><a href="#/">Home</a> / <a href="#/spokes">Spokes</a> / ${s.name}</div>
+    <div class="crumbs"><a href="#/">Home</a> / <a href="#/spokes">Pet Care Centres</a> / ${s.name}</div>
     <div class="svc" style="padding-top:0">
       <div><h1>${s.name}</h1><p class="lede">${s.addr}, ${s.dist} away. Open ${s.hours}, every day.</p>
         <img class="svc-hero" src="${IMG[s.img === "spoke" ? "spoke" : s.img]}" alt="${s.name}">
-        <h2>At this spoke</h2>
+        <h2>At this centre</h2>
         <div class="amen">
-          ${tile("#/book/checkup", "clinic", "Clinic", "Check-ups, vaccines and minor treatment. Complex cases are referred to the hub.", `Check-up ${rs(499)}`)}
+          ${tile("#/book/checkup", "clinic", "Clinic", "Check-ups, vaccines and minor treatment. Complex cases are referred to the Kobi 24/7 Emergency Hospital.", `Check-up ${rs(499)}`)}
           ${tile("#/boarding", "play", "Day stay and play area", "Drop in for the day, or just for an hour of play.", `${rs(BOARD_PRICE)} a day`)}
           ${tile("#/spoke/" + s.id, "cafe", "Café", "Coffee and snacks for you, a water bowl and treats for them.", "Walk in")}
           ${tile("#/spoke/" + s.id, "icecream", "Ice cream bar", "Pet-safe scoops in mango, peanut butter and blueberry.", `Pup cup ${rs(149)}`)}
@@ -658,11 +686,11 @@ P.book = key => {
   const b = BOOKABLE[key] || BOOKABLE.checkup, s = S.sel.book;
   const hub = b.where === "hub";
   return `<div class="wrap svc">
-    <div><div class="crumbs"><a href="#/">Home</a> / ${hub ? '<a href="#/er">Flagship hub</a>' : '<a href="#/spokes">Spokes</a>'} / ${b.title}</div>
-      <h1>${b.title}</h1><p class="lede">${hub ? "At the Kobi flagship hub." : "At any Kobi spoke clinic."} ${b.from ? "Final price depends on what's needed; you'll see it before you pay anything extra." : ""}</p>
+    <div><div class="crumbs"><a href="#/">Home</a> / ${hub ? '<a href="#/er">Kobi 24/7 Emergency Hospital</a>' : '<a href="#/spokes">Pet Care Centres</a>'} / ${b.title}</div>
+      <h1>${b.title}</h1><p class="lede">${hub ? "At the Kobi 24/7 Emergency Hospital." : "At any Pet Care Centre."} ${b.from ? "Final price depends on what's needed; you'll see it before you pay anything extra." : ""}</p>
       <img class="svc-hero" src="${IMG[b.img]}" alt=""></div>
     <aside class="widget"><h3>Book ${b.title.toLowerCase()}</h3>
-      ${hub ? "" : `<label class="field"><span>Spoke</span><select class="input" data-in="book.where">${SPOKES.map(x => `<option value="${x.id}" ${s.where === x.id ? "selected" : ""}>${x.name}</option>`).join("")}</select></label>`}
+      ${hub ? "" : `<label class="field"><span>Centre</span><select class="input" data-in="book.where">${SPOKES.map(x => `<option value="${x.id}" ${s.where === x.id ? "selected" : ""}>${x.name}</option>`).join("")}</select></label>`}
       <div class="wlabel">Which day?</div>${dateStrip(s.date, "book")}
       <div class="wlabel">Time</div><div class="slots">${b.slots.map(t => `<button class="chip ${s.time === t ? "on" : ""}" data-a="pick" data-v="book.time:${t}">${t}</button>`).join("")}</div>
       <div class="total"><span>${b.from ? "From, taxes included" : "Total, taxes included"}</span><b>${rs(b.price)}</b></div>
@@ -670,16 +698,16 @@ P.book = key => {
 };
 
 P.er = () => `<div class="wrap">
-  <div class="wide-hero"><img src="${IMG.erhub}" alt="The Kobi 24x7 Pet ER Center"><div class="over"><h1>Kobi 24x7 Pet ER Center</h1>
+  <div class="wide-hero"><img src="${IMG.erhub}" alt="The Kobi 24/7 Emergency Hospital"><div class="over"><h1>Kobi 24/7 Emergency Hospital</h1>
     <p style="color:#D6E9E5;max-width:56ch">Emergency and critical care around the clock: triage, surgery and ICU. Also home to suites, a spa, a café and an ice cream bar.</p>
     <div class="row"><a class="btn er" href="tel:${ER_PHONE}">Call the ER</a><a class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" href="#/emergency">It's an emergency</a></div></div></div>
   <section class="section"><h2>When you arrive at the ER</h2>
     <ol class="steps-n"><li><b>Triage at the door</b><p class="muted small">A nurse checks breathing, bleeding and pain first.</p></li>
-      <li><b>History on screen</b><p class="muted small">With a Passport, the ER vet sees vaccines, allergies and past visits.</p></li>
+      <li><b>History on screen</b><p class="muted small">With a Pet Health Profile, the ER vet sees vaccines, allergies and past visits.</p></li>
       <li><b>Treatment</b><p class="muted small">Surgery, imaging or ICU, with the cost explained before anything planned.</p></li>
-      <li><b>Updates to your phone</b><p class="muted small">Notes and next steps go to the app and the Passport.</p></li></ol></section>
+      <li><b>Updates to your phone</b><p class="muted small">Notes and next steps go to the app and the Pet Health Profile.</p></li></ol></section>
   <img src="${IMG.erroom}" alt="Vets examining a dog in the ER treatment room" style="border-radius:26px;width:100%;aspect-ratio:21/9;object-fit:cover">
-  <section class="section"><h2>Also at the hub</h2><div class="amen">
+  <section class="section"><h2>Also at the hospital</h2><div class="amen">
     ${tile("#/book/suite", "suite", "Luxury boarding suites", "Private rooms with a proper bed, for nights away.", `${rs(2499)} a night`)}
     ${tile("#/book/groom", "groom", "Grooming and spa", "Bath, trim, nails and a blow-dry.", `From ${rs(999)}`)}
     ${tile("#/er", "cafe", "Pet restaurant and café", "Sit down with your pet. Bowls and treats on the house.", "Walk in")}
@@ -690,7 +718,7 @@ P.shop = () => {
   const sp = S.sel.shop.sp;
   const list = PRODUCTS.filter(x => sp === "All" || x.sp === sp || x.sp === "All");
   return `<div class="wrap" style="padding-top:30px"><div class="crumbs"><a href="#/">Home</a> / Shop</div>
-    <h1>Food, toys and supplies</h1><p class="lede">Delivered in about 2 hours, or collect from a spoke. Pay per order.</p>
+    <h1>Food, toys and supplies</h1><p class="lede">Delivered in about 2 hours, or collect from a Pet Care Centre. Pay per order.</p>
     <div class="shopbar">${["All", "Dog", "Cat"].map(x => `<button class="chip ${sp === x ? "on" : ""}" data-a="pick" data-v="shop.sp:${x}">${x === "All" ? "All pets" : x + "s"}</button>`).join("")}</div>
     <div class="products">${list.map(prodCard).join("")}</div></div>`;
 };
@@ -706,7 +734,7 @@ P.product = id => {
       <p class="muted">${x.desc}</p>${allergyFlag(x)}
       <div class="row" style="margin:20px 0"><div class="qty"><button data-a="pq" data-v="-1" aria-label="Fewer">−</button><span>${S.pq}</span><button data-a="pq" data-v="1" aria-label="More">+</button></div>
         <button class="btn primary" data-a="add" data-v="${x.id}">Add to cart</button><button class="btn ghost" data-a="buyNow" data-v="${x.id}">Buy now</button></div>
-      <ul class="muted small"><li>Delivery in about 2 hours, ${rs(49)}, free over ${rs(999)}</li><li>Or collect at any spoke, free</li></ul>
+      <ul class="muted small"><li>Delivery in about 2 hours, ${rs(49)}, free over ${rs(999)}</li><li>Or collect at any Pet Care Centre, free</li></ul>
       <button class="btn ghost sm" data-a="chatAsk" data-v="Is ${esc(x.name)} right for ${esc(petName())}?">Ask Kobi about this</button></div></div></div>`;
 };
 
@@ -732,7 +760,7 @@ function mapBase(){ return `<rect width="400" height="260" fill="var(--map)"/>
   <g stroke="var(--street)" stroke-width="12" fill="none" stroke-linecap="round"><path d="M0 150H400M0 84H400M40 0V260M120 0V260M222 0V260M300 0V260M0 30H400"/></g>
   <g stroke="var(--street)" stroke-width="5" fill="none"><path d="M0 116H400M170 0V260M262 0V260M362 0V170"/></g>`; }
 function mapSvg(kind){
-  if (kind === "spokes") return `<svg class="map" viewBox="0 0 400 260" role="img" aria-label="Map of Kobi spokes and the ER hub">${mapBase()}
+  if (kind === "spokes") return `<svg class="map" viewBox="0 0 400 260" role="img" aria-label="Map of Kobi Pet Care Centres and the Kobi 24/7 Emergency Hospital">${mapBase()}
     ${[[170,116,"Hauz Khas"],[222,30,"Green Park"],[300,150,"Malviya Nagar"],[48,84,"Vasant Vihar"]].map(([x, y, n]) => `<g transform="translate(${x} ${y})"><circle r="11" fill="var(--teal)" stroke="#fff" stroke-width="3"/><text y="-17" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${n}</text></g>`).join("")}
     <g transform="translate(362 60)"><circle r="13" fill="var(--er)" stroke="#fff" stroke-width="3"/><text y="4" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">ER</text></g>
     <g transform="translate(40 220)"><circle r="7" fill="#2C6FD6" stroke="#fff" stroke-width="3"/><text x="12" y="4" font-size="11" font-weight="700" fill="var(--ink)">You</text></g></svg>`;
@@ -777,7 +805,7 @@ P.checkout = () => {
   if (cur === "signin") body = !S.otp.sent ? `<h2>Sign in with your phone</h2><p class="muted">We'll text you a code. No password needed.</p>
       <label class="field"><span>Mobile number</span><input class="input" id="phone" inputmode="tel" autocomplete="tel" placeholder="98765 43210" value="${esc(S.otp.phone)}"></label>
       <button class="btn primary" data-a="sendOtp">Send code</button>
-      <p class="hint">Demo: 98765 43210 signs in Priya, who has a dog with a Passport. Any other number is a new user.</p>`
+      <p class="hint">Demo: 98765 43210 signs in Priya, who has a dog with a Pet Health Profile. Any other number is a new user.</p>`
     : `<h2>Enter the code</h2><p class="muted">Sent to ${esc(S.otp.phone)}. <button class="btn ghost sm" data-a="otpBack">Change number</button></p>
       <label class="field"><span>4-digit code</span><input class="input" id="otp" inputmode="numeric" maxlength="4" placeholder="1234" style="max-width:160px;letter-spacing:.3em;font-size:1.3rem"></label>
       <button class="btn primary" data-a="verifyOtp">Verify and continue</button><p class="hint">Demo code: 1234</p>`;
@@ -788,8 +816,8 @@ P.checkout = () => {
   else {
     const p = pet();
     body = `<h2>Pay ${rs(d.total)}</h2>
-      ${p && d.needsPet ? `<div class="row" style="margin-bottom:14px"><img src="${IMG[p.img] || IMG.p_indie}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover"><span>For <b>${esc(p.name)}</b>${hasPassport() ? ' <span class="pill ok">Passport</span>' : ""}</span></div>` : ""}
-      ${d.needsPet ? `<label class="field"><span>Notes for the team</span><textarea class="input" placeholder="Allergies, medicines, behaviour">${hasPassport() ? esc(`Allergic to ${p.passport.allergies.join(", ").toLowerCase()}. ${p.passport.diet}.`) : ""}</textarea>${hasPassport() ? '<div class="hint">Filled in from the Passport.</div>' : '<div class="hint">Optional.</div>'}</label>` : ""}
+      ${p && d.needsPet ? `<div class="row" style="margin-bottom:14px"><img src="${IMG[p.img] || IMG.p_indie}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover"><span>For <b>${esc(p.name)}</b>${hasPassport() ? ' <span class="pill ok">Pet Passport</span>' : ""}</span></div>` : ""}
+      ${d.needsPet ? `<label class="field"><span>Notes for the team</span><textarea class="input" placeholder="Allergies, medicines, behaviour">${hasPassport() ? esc(`Allergic to ${p.passport.allergies.join(", ").toLowerCase()}. ${p.passport.diet}.`) : ""}</textarea>${hasPassport() ? '<div class="hint">Filled in from the Pet Health Profile.</div>' : '<div class="hint">Optional.</div>'}</label>` : ""}
       <div class="pay">${[["upi", "UPI", "Pay from any UPI app"], ["card", "Card", "Visa, Mastercard, RuPay"], ["wallet", "Wallet", "Paytm, PhonePe, Amazon Pay"]].map(([v, l, s], i) => `<label><input type="radio" name="pm" value="${v}" ${i === 0 ? "checked" : ""}><span><b>${l}</b><br><span class="muted small">${s}</span></span></label>`).join("")}</div>
       <button class="btn primary block" style="margin-top:18px" data-a="pay" id="payBtn">Pay ${rs(d.total)}</button>
       <p class="hint" style="text-align:center">You pay for this booking only. No subscription.</p>`;
@@ -798,12 +826,12 @@ P.checkout = () => {
     <aside class="widget"><h3>Summary</h3><b>${esc(d.title)}</b><div class="muted small" style="margin-bottom:10px">${esc(d.when || "")}${d.where ? "<br>" + esc(d.where) : ""}</div>
       ${d.lines.map(([l, a]) => `<div class="sum-line"><span>${esc(l)}</span><span>${typeof a === "number" ? rs(a) : a}</span></div>`).join("")}
       <div class="total"><span>Total</span><b>${rs(d.total)}</b></div>
-      ${d.type === "tele" ? '<p class="hint">Credited if your pet is seen at a spoke or the ER within 48 hours.</p>' : '<p class="hint">Free cancellation up to 2 hours before.</p>'}</aside></div>`;
+      ${d.type === "tele" ? '<p class="hint">Credited if your pet is seen at a Pet Care Centre or the ER within 48 hours.</p>' : '<p class="hint">Free cancellation up to 2 hours before.</p>'}</aside></div>`;
 };
 function petBasicsForm(type, ctx){
   const f = S.pf = S.pf || {species:"Dog", size:"Medium", temper:"Friendly"};
   const needSize = ["walk", "board", "groom", "suite"].includes(type), needTemper = type === "walk", needAge = ["tele", "clinic"].includes(type);
-  return `<h2>${ctx === "co" ? "A few details about your pet" : "Add a pet"}</h2><p class="muted">${ctx === "co" ? "Only what this booking needs. You can add more later, or create a full Passport." : "A basic profile is enough to book anything."}</p>
+  return `<h2>${ctx === "co" ? "A few details about your pet" : "Add a pet"}</h2><p class="muted">${ctx === "co" ? "Only what this booking needs. You can add more later, or create a full Pet Health Profile." : "A basic profile is enough to book anything."}</p>
     <label class="field"><span>Name</span><input class="input" id="pfName" placeholder="Bruno" value="${esc(f.name || "")}"></label>
     <div class="wlabel">Species</div><div class="slots">${["Dog", "Cat"].map(x => `<button class="chip ${f.species === x ? "on" : ""}" data-a="pf" data-v="species:${x}">${x}</button>`).join("")}</div>
     ${needSize || ctx !== "co" ? `<div class="wlabel">Size</div><div class="slots">${["Small", "Medium", "Large"].map(x => `<button class="chip ${f.size === x ? "on" : ""}" data-a="pf" data-v="size:${x}">${x}</button>`).join("")}</div>` : ""}
@@ -823,7 +851,7 @@ P.confirm = id => {
     <p class="muted">Reference ${it.id}, paid ${rs(it.total)}.</p>
     <div class="row" style="justify-content:center">${o || ["walk", "board", "tele"].includes(b.type) ? `<a class="btn primary" href="#/track/${it.id}">${o ? "Track order" : b.type === "tele" ? "Go to the video room" : "Open live updates"}</a>` : ""}
       ${b ? '<button class="btn ghost" data-a="cal">Add to calendar</button>' : ""}<a class="btn ghost" href="#/account">Bookings and orders</a></div>
-    ${ask ? `<div class="invite"><img src="${IMG.i_passport}" alt=""><div><h3>Create ${esc(p.name)}'s Pet Passport?</h3><p class="muted small">Next time, bookings fill themselves in, you'll get vaccine reminders, and the ER sees ${esc(p.name)}'s history on arrival. It takes about a minute, and it's optional.</p>
+    ${ask ? `<div class="invite"><img src="${IMG.i_passport}" alt=""><div><h3>Create ${esc(p.name)}'s Pet Health Profile?</h3><p class="muted small">Next time, bookings fill themselves in, you'll get vaccine reminders, and the ER sees ${esc(p.name)}'s history on arrival. It takes about a minute, and it's optional.</p>
       <div class="row"><a class="btn primary sm" href="#/passport/${p.id}">Set up now</a><button class="btn ghost sm" data-a="ppAsk" data-v="later">Later</button><button class="btn ghost sm" data-a="ppAsk" data-v="no">No thanks</button></div></div></div>` : ""}</div>`;
 };
 
@@ -893,12 +921,12 @@ function trackTele(b, p){
   const v = VETS[0];
   if (b.status === "done") return `<div class="wrap track"><div><div class="crumbs"><a href="#/account">Bookings</a> / Consult notes</div><h1>Notes from ${v.name}</h1>
       <div class="report"><p><b>What we saw:</b> mild stomach upset, alert and drinking.</p><p><b>Plan:</b> small bland meals for 48 hours, fresh water always available.</p><p><b>Come in if:</b> vomiting continues past 24 hours, blood appears, or ${esc(p.name)} stops drinking. Your ${rs(TELE_PRICE)} is credited at the visit.</p>
-      <p class="muted small">${p.passport ? `Saved to ${esc(p.name)}'s Passport.` : "Saved to the basic profile."}</p>
-      ${p.passport ? "" : `<a class="btn ghost sm" href="#/passport/${p.id}">Turn this into a Passport</a>`} <a class="btn primary sm" href="#/book/checkup">Book a follow-up</a></div></div>
+      <p class="muted small">${p.passport ? `Saved to ${esc(p.name)}'s Pet Health Profile.` : "Saved to the basic profile."}</p>
+      ${p.passport ? "" : `<a class="btn ghost sm" href="#/passport/${p.id}">Turn this into a Pet Health Profile</a>`} <a class="btn primary sm" href="#/book/checkup">Book a follow-up</a></div></div>
     <div class="report">${ratingBlock(b, v.name)}</div></div>`;
   if (b.status === "live") return `<div class="wrap track"><div><h1>In a call with ${v.name}</h1><div class="video"><img src="${IMG[v.img]}" alt="${v.name} on video"><img class="self" src="${IMG[p.img] || IMG.p_tabby}" alt="Your camera">
       <div class="ctrls"><button aria-label="Mute">🎤</button><button aria-label="Camera">📷</button><button class="end" data-a="endCall" data-v="${b.id}">End call</button></div></div></div>
-      <div class="report"><b>${v.name} can see</b><ul class="small"><li>Your description of the problem</li>${p.passport ? `<li>${esc(p.name)}'s Passport: vaccines, allergies, past visits</li>` : `<li>${esc(p.name)}'s basic profile</li>`}<li>Photos you upload in chat</li></ul><button class="btn ghost sm" data-a="chat">Open chat beside the call</button></div></div>`;
+      <div class="report"><b>${v.name} can see</b><ul class="small"><li>Your description of the problem</li>${p.passport ? `<li>${esc(p.name)}'s Pet Health Profile: vaccines, allergies, past visits</li>` : `<li>${esc(p.name)}'s basic profile</li>`}<li>Photos you upload in chat</li></ul><button class="btn ghost sm" data-a="chat">Open chat beside the call</button></div></div>`;
   return `<div class="wrap track"><div><h1>Video room</h1><div class="video"><img src="${IMG.tele}" alt=""></div></div>
     <div class="report"><div class="row"><img src="${IMG[v.img]}" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover"><div><b>${v.name}</b><div class="muted small">${v.role}</div></div></div>
       <p style="margin-top:12px">Joins in about 6 minutes. Keep ${esc(p.name)} close and the room well lit.</p><button class="btn primary" data-a="joinCall" data-v="${b.id}">Join the video call</button></div></div>`;
@@ -929,17 +957,17 @@ P.account = () => {
       : `<div class="bitem"><img src="${IMG[bImg(x)]}" alt=""><div><b>${esc(x.title)}</b> ${x.status === "live" ? '<span class="pill ok">Live now</span>' : x.status === "cancelled" ? '<span class="pill bad">Cancelled</span>' : ""}<div class="muted small">${esc(x.when)}${x.where ? ", " + esc(x.where) : ""}. ${rs(x.total)}</div></div>
         <div class="row">${x.status === "upcoming" || x.status === "live" ? `<a class="btn primary sm" href="#/track/${x.id}">${x.type === "tele" ? "Video room" : "Open"}</a>${x.status === "upcoming" ? `<button class="btn ghost sm" data-a="cancel" data-v="${x.id}">Cancel</button>` : ""}` : x.status === "done" ? `<a class="btn ghost sm" href="#/track/${x.id}">${x.rating ? `★ ${x.rating}` : "Rate"}</a>${x.type === "walk" ? `<button class="btn ghost sm" data-a="rebook" data-v="${x.meta.walker}">Book again</button>` : ""}` : ""}</div></div>`).join("") : empty}</div></div>`;
 };
-P.pets = () => `<div class="wrap" style="padding-top:30px"><h1>My pets</h1><p class="muted">A basic profile is all you need to book. Add a Passport for reminders and shared health records.</p>
+P.pets = () => `<div class="wrap" style="padding-top:30px"><h1>My pets</h1><p class="muted">A basic profile is all you need to book. Add a Pet Health Profile for reminders and shared health records.</p>
   ${S.pets.length ? `<div class="pets">${S.pets.map(p => `<div class="petcard"><img src="${IMG[p.img] || IMG.p_indie}" alt=""><h3>${esc(p.name)}</h3><div class="muted small">${esc([p.species, p.size, p.age].filter(Boolean).join(", "))}</div>
     <div style="margin:10px 0">${p.passport ? '<span class="pill ok">Pet Passport</span>' : '<span class="pill">Basic profile</span>'} ${S.active === p.id ? '<span class="pill warn">Active</span>' : ""}</div>
-    <div class="row" style="justify-content:center">${p.passport ? `<a class="btn primary sm" href="#/passport/${p.id}">Open Passport</a>` : `<a class="btn primary sm" href="#/passport/${p.id}">Create Passport</a>`}${S.active !== p.id ? `<button class="btn ghost sm" data-a="activate" data-v="${p.id}">Make active</button>` : ""}</div></div>`).join("")}</div>` : ""}
+    <div class="row" style="justify-content:center">${p.passport ? `<a class="btn primary sm" href="#/passport/${p.id}">Open Pet Health Profile</a>` : `<a class="btn primary sm" href="#/passport/${p.id}">Create Pet Health Profile</a>`}${S.active !== p.id ? `<button class="btn ghost sm" data-a="activate" data-v="${p.id}">Make active</button>` : ""}</div></div>`).join("")}</div>` : ""}
   <div style="margin-top:26px">${S.petForm ? `<div class="card" style="max-width:560px">${petBasicsForm("add", "add")}</div>` : `<button class="btn ghost" data-a="petForm">Add a pet</button>`}</div></div>`;
 
 const AVATARS = ["p_indie", "p_lab", "p_beagle", "p_tabby", "p_persian", "p_senior"];
 P.passport = id => {
   const p = S.pets.find(x => x.id === id);
-  if (!p) return `<div class="wrap empty"><img src="${IMG.i_passport}" alt=""><h1 style="font-size:2rem">Add a pet first</h1><p class="muted">A Passport belongs to a pet. Add one, then create the Passport.</p><a class="btn primary" href="#/pets">Add a pet</a></div>`;
-  if (!p.passport) return `<div class="wrap" style="padding-top:30px;max-width:760px"><div class="crumbs"><a href="#/pets">My pets</a> / Passport</div><h1>${esc(p.name)}'s Pet Passport</h1>
+  if (!p) return `<div class="wrap empty"><img src="${IMG.i_passport}" alt=""><h1 style="font-size:2rem">Add a pet first</h1><p class="muted">A Pet Health Profile belongs to a pet. Add one, then create the Pet Health Profile.</p><a class="btn primary" href="#/pets">Add a pet</a></div>`;
+  if (!p.passport) return `<div class="wrap" style="padding-top:30px;max-width:760px"><div class="crumbs"><a href="#/pets">My pets</a> / Pet Health Profile</div><h1>${esc(p.name)}'s Pet Health Profile</h1>
     <p class="muted">Everything is optional. Skip what you don't know and add it later.</p>
     <div class="card"><div class="wlabel">Photo</div><div class="slots">${AVATARS.map(a => `<button class="chip ${p.img === a ? "on" : ""}" data-a="ppImg" data-v="${p.id}:${a}" style="padding:3px"><img src="${IMG[a]}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover"></button>`).join("")}</div>
       <label class="field" style="margin-top:16px"><span>Breed</span><input class="input" id="ppBreed" value="${esc(p.breed || "")}" placeholder="Indie"></label>
@@ -950,28 +978,28 @@ P.passport = id => {
       <label class="field"><span>Microchip number</span><input class="input" id="ppChip" placeholder="15 digits on the chip card"></label>
       <label class="field"><span>Emergency contact</span><input class="input" id="ppEm" placeholder="Name and phone"></label>
       <label class="row" style="margin:6px 0 18px;align-items:flex-start"><input type="checkbox" id="ppConsent" checked style="margin-top:5px"><span class="small">Share this record with Kobi vets, walkers, boarding staff and partner clinics, so they can care for ${esc(p.name)} safely. You can change this any time.</span></label>
-      <div class="row"><button class="btn primary" data-a="savePassport" data-v="${p.id}">Save Passport</button><a class="btn ghost" href="#/pets">Not now</a></div></div></div>`;
+      <div class="row"><button class="btn primary" data-a="savePassport" data-v="${p.id}">Save Pet Health Profile</button><a class="btn ghost" href="#/pets">Not now</a></div></div></div>`;
   const pp = p.passport;
-  return `<div class="wrap"><div class="crumbs" style="margin-top:24px"><a href="#/pets">My pets</a> / Passport</div>
+  return `<div class="wrap"><div class="crumbs" style="margin-top:24px"><a href="#/pets">My pets</a> / Pet Health Profile</div>
     <div class="pp-head" style="margin-top:8px"><img src="${IMG[p.img]}" alt=""><div><h1 style="margin:0">${esc(p.name)}</h1><div class="facts"><div><span>Species</span>${esc(p.species)}</div><div><span>Breed</span>${esc(p.breed || "Not added")}</div><div><span>Age</span>${esc(p.age || "Not added")}</div><div><span>Weight</span>${esc(p.weight || "Not added")}</div></div>
       <p class="muted small" style="margin-top:10px">Microchip ${esc(pp.chip || "not added")}</p></div>
       <div style="text-align:center">${qrSvg(p.id)}<div class="small muted">Show at any clinic</div></div></div>
     <div class="pp-grid"><div class="card"><h3>Vaccines and care</h3>${pp.vaccines.length ? `<table class="vax"><thead><tr><th>Vaccine</th><th>Given</th><th>Next due</th><th>Status</th></tr></thead><tbody>${pp.vaccines.map(v => `<tr><td>${v.name}</td><td>${v.date}</td><td>${v.due}</td><td><span class="pill ${v.st}">${{ok:"Up to date", warn:"Due soon", bad:"Overdue"}[v.st]}</span></td></tr>`).join("")}</tbody></table>` : '<p class="muted">No vaccines added yet.</p>'}
-      ${pp.vaccines.some(v => v.st !== "ok") ? `<a class="btn primary sm" style="margin-top:14px" href="#/book/vaccine">Book at a spoke</a>` : ""}</div>
+      ${pp.vaccines.some(v => v.st !== "ok") ? `<a class="btn primary sm" style="margin-top:14px" href="#/book/vaccine">Book at a Centre</a>` : ""}</div>
       <div class="card"><h3>Allergies and diet</h3><p>${pp.allergies.length ? pp.allergies.map(a => `<span class="pill bad">${esc(a)}</span>`).join(" ") : '<span class="muted">None recorded</span>'}</p><p>${esc(pp.diet || "Diet not added")}</p><h3>Emergency contact</h3><p>${esc(pp.emergency || "Not added")}</p></div>
       <div class="card" style="grid-column:1/-1"><h3>Visits</h3>${pp.visits.length ? pp.visits.map(v => `<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>${v.date}</b>, ${esc(v.where)}<div class="muted">${esc(v.note)}</div></div>`).join("") : '<p class="muted">Visits at Kobi clinics, the ER and video consults appear here.</p>'}</div></div></div>`;
 };
 function qrSvg(seed){ let h = 0; for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0; let r = ""; for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++){ const corner = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13); let on;
   if (corner){ const cx = x % 14, cy = y % 14, a = Math.max(Math.abs(cx - 3), Math.abs(cy - 3)); on = a !== 2 && a <= 3; } else { h = (h * 1103515245 + 12345) >>> 0; on = (h >> 16) & 1; }
-  if (on) r += `<rect x="${x}" y="${y}" width="1" height="1"/>`; } return `<svg class="qr" viewBox="0 0 21 21" role="img" aria-label="Passport QR code"><g fill="#17322F">${r}</g></svg>`; }
+  if (on) r += `<rect x="${x}" y="${y}" width="1" height="1"/>`; } return `<svg class="qr" viewBox="0 0 21 21" role="img" aria-label="Pet Health Profile QR code"><g fill="#17322F">${r}</g></svg>`; }
 
 P.help = () => {
   const faqs = [["How does pay-per-use work?", "You pay for each walk, stay, consult or order when you book it. There's no membership or subscription."],
     ["Can I cancel a booking?", "Yes. Cancel free up to 2 hours before. After that, half the price is charged so we can pay the walker or carer."],
-    ["Do I need a Pet Passport?", "No. A name, species and size are enough to book anything. A Passport adds reminders and lets Kobi vets see your pet's history."],
-    ["What does a video consult cost?", `${rs(TELE_PRICE)} per call. If the vet asks to see your pet and you visit a spoke or the ER within 48 hours, it's credited against that visit.`],
+    ["Do I need a Pet Passport?", "No. A name, species and size are enough to book anything. A Pet Health Profile adds reminders and lets Kobi vets see your pet's history."],
+    ["What does a video consult cost?", `${rs(TELE_PRICE)} per call. If the vet asks to see your pet and you visit a Pet Care Centre or the ER within 48 hours, it's credited against that visit.`],
     ["What do I need for day boarding?", "A rabies vaccine from the last 12 months. Upload the vaccine card at checkout or show it at drop-off."],
-    ["When are spokes open?", "Most spokes are open 8 am to 10 pm. The ER at the flagship hub is open 24 hours a day."]];
+    ["When are Pet Care Centres open?", "Most Pet Care Centres are open 8 am to 10 pm. The Kobi 24/7 Emergency Hospital is open 24 hours a day."]];
   return `<div class="wrap" style="padding-top:30px;max-width:820px"><h1>Help and FAQ</h1>${faqs.map(([q, a]) => `<details class="faq"><summary>${q}</summary><p class="muted">${a}</p></details>`).join("")}
     <div class="card" style="margin-top:22px"><h3>Still stuck?</h3><p class="muted">Chat with the Kobi team. A person replies in a few minutes.</p><button class="btn primary" data-a="human">Chat with support</button></div></div>`;
 };
@@ -979,7 +1007,7 @@ P.emergency = () => {
   const p = pet();
   return `<div class="wrap"><div class="emergency-page"><div><h1>Call the Kobi ER now</h1><p class="lede" style="color:var(--ink)">Open 24 hours. Call while you travel so the team is ready when you arrive.</p>
     <a class="btn er bigcall" href="tel:${ER_PHONE}">Call the ER</a>
-    <p style="margin-top:20px"><b>Kobi 24x7 Pet ER Center</b><br>South Delhi. About 12 minutes by car from Hauz Khas.</p>
+    <p style="margin-top:20px"><b>Kobi 24/7 Emergency Hospital</b><br>South Delhi. About 12 minutes by car from Hauz Khas.</p>
     <a class="btn ghost" href="https://maps.google.com" target="_blank" rel="noopener">Open directions</a>
     ${hasPassport() ? `<p style="margin-top:18px">${S.recordSent ? `✓ ${esc(p.name)}'s record has been sent to the ER team.` : `<button class="btn primary" data-a="sendRecord">Send ${esc(p.name)}'s record ahead</button>`}</p>` : ""}</div>
     <div>${mapSvg("er")}<div class="card" style="margin-top:16px"><b>While you travel</b><ul class="small" style="margin:8px 0 0;padding-left:18px"><li>Keep your pet still and warm, and support the head and back.</li><li>If something was swallowed, bring the packaging.</li><li>Don't give human medicines.</li></ul></div></div></div></div>`;
@@ -1009,10 +1037,10 @@ A.reset = () => { if (confirm("Reset the demo? This clears sign-in, pets, bookin
 function draft(d){ S.draft = d; S.otp = {phone:"", sent:false}; location.hash = "#/checkout"; }
 A.draftWalk = () => { const s = S.sel.walk, w = WALKERS.find(x => x.id === s.walker);
   draft({type:"walk", title:`${s.dur} min walk with ${w.name}`, when:`${dayLabel(s.date)}, ${s.time}`, where:"Pickup from home", lines:[[`${s.dur} min walk`, WALK_PRICE[s.dur]]], total:WALK_PRICE[s.dur], needsPet:true, meta:{walker:w.id, dur:s.dur}}); };
-A.draftBoard = () => { const s = S.sel.board, where = s.where === "hub" ? "Flagship hub" : SPOKES.find(x => x.id === s.where).name;
+A.draftBoard = () => { const s = S.sel.board, where = s.where === "hub" ? "Kobi 24/7 Emergency Hospital" : SPOKES.find(x => x.id === s.where).name;
   draft({type:"board", title:"Day boarding", when:`${dayLabel(s.date)}, ${s.drop} to ${s.pick}`, where, lines:[["Day stay", BOARD_PRICE]], total:BOARD_PRICE, needsPet:true, meta:{}}); };
 A.draftTele = () => draft({type:"tele", title:"Video consult with a Kobi vet", when:"Now, about 6 minutes", where:"Video call", lines:[["Video consult", TELE_PRICE]], total:TELE_PRICE, needsPet:true, meta:{concern:S.vetConcern || ""}});
-A.draftBook = k => { const b = BOOKABLE[k], s = S.sel.book, where = b.where === "hub" ? "Flagship hub" : SPOKES.find(x => x.id === s.where).name;
+A.draftBook = k => { const b = BOOKABLE[k], s = S.sel.book, where = b.where === "hub" ? "Kobi 24/7 Emergency Hospital" : SPOKES.find(x => x.id === s.where).name;
   draft({type:["checkup", "vaccine", "treatment"].includes(k) ? "clinic" : k, title:b.title, when:`${dayLabel(s.date)}, ${s.time}`, where, lines:[[b.title, b.price]], total:b.price, needsPet:true, meta:{}}); };
 A.draftCart = () => { const t = cartTotals(); draft({type:"cart", title:S.cart.length === 1 ? PRODUCTS.find(p => p.id === S.cart[0].id).name : `${S.cart.reduce((a, c) => a + c.q, 0)} items from the Kobi shop`, when:S.delivery === "collect" ? "Ready in 30 minutes" : "In about 2 hours", where:S.delivery === "collect" ? "Collect at Kobi Hauz Khas" : "Deliver to home",
   lines:[...S.cart.map(c => { const x = PRODUCTS.find(p => p.id === c.id); return [`${x.name} × ${c.q}`, x.price * c.q]; }), ["Delivery", t.del || "Free"]], total:t.total, needsPet:false, meta:{}}); };
@@ -1051,7 +1079,7 @@ A.boardNext = id => { const b = S.bookings.find(x => x.id === id); b.meta.update
 A.joinCall = id => { const b = S.bookings.find(x => x.id === id); b.status = "live"; render(true); };
 A.endCall = id => { const b = S.bookings.find(x => x.id === id); b.status = "done"; const p = S.pets.find(x => x.id === b.pet);
   if (p && p.passport) p.passport.visits.unshift({date:"Today", where:"Video consult, Dr Ananya Rao", note:"Mild stomach upset. Bland diet for 48 hours."});
-  chatPush("bot", `Dr Ananya's notes are saved${p && p.passport ? ` to ${esc(p.name)}'s Passport` : ""}. If you visit a spoke within 48 hours, your ${rs(TELE_PRICE)} is credited.`, [["Book a follow-up", "go", "#/book/checkup"]]); render(true); };
+  chatPush("bot", `Dr Ananya's notes are saved${p && p.passport ? ` to ${esc(p.name)}'s Pet Health Profile` : ""}. If you visit a Pet Care Centre within 48 hours, your ${rs(TELE_PRICE)} is credited.`, [["Book a follow-up", "go", "#/book/checkup"]]); render(true); };
 A.orderNext = id => { const o = S.orders.find(x => x.id === id); o.status = Math.min(3, o.status + 1); if (o.status === 3 && !o.mode.includes("Collect")) o.mode = "Delivered to home"; render(true); };
 A.rate = v => { const [id, n] = v.split(":"); const b = S.bookings.find(x => x.id === id); b.rating = Number(n); toast(n >= 4 ? "Thanks for rating" : "Thanks. We'll follow up"); if (n < 3) chatPush("bot", "Sorry it wasn't great. I've asked the Kobi team to call you within a day.", []); render(true); if (S.chat.open) renderChat(); };
 A.tip = () => toast("Tip of ₹50 added. Thank you");
@@ -1067,7 +1095,7 @@ A.savePassport = id => { const p = S.pets.find(x => x.id === id), g = k => $("#"
   const rab = $("#ppRabies").value; const vax = [];
   if (rab){ const d = new Date(rab), due = new Date(d); due.setFullYear(d.getFullYear() + 1); const f = x => x.toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"}); const days = (due - new Date()) / 864e5; vax.push({name:"Rabies", date:f(d), due:f(due), st:days < 0 ? "bad" : days < 60 ? "warn" : "ok"}); }
   p.passport = {chip:g("ppChip"), allergies:g("ppAllergy") ? g("ppAllergy").split(/,\s*/) : [], diet:g("ppDiet"), emergency:g("ppEm"), vaccines:vax, visits:[]};
-  S.active = id; toast("Passport saved"); chatPush("bot", `${esc(p.name)}'s Passport is set up. I'll remind you before vaccines are due.`, []); render(); };
+  S.active = id; toast("Pet Health Profile saved"); chatPush("bot", `${esc(p.name)}'s Pet Health Profile is set up. I'll remind you before vaccines are due.`, []); render(); };
 A.sendRecord = () => { S.recordSent = true; toast("Record sent to the ER team"); render(true); };
 A.go = v => { location.hash = v; };
 </script>
@@ -1088,7 +1116,7 @@ function renderChat(){
   const keep = $("#chatInput") ? $("#chatInput").value : "";
   el.classList.add("open");
   const p = pet();
-  el.innerHTML = `<div class="chat-head">${AVATAR}<div><b>${C.mode === "agent" ? "Ravi, Kobi support" : "Kobi assistant"}</b><small>${C.mode === "agent" ? "A person is replying" : p ? `Helping with ${esc(p.name)}` : "Bookings, orders and vet help"}</small></div><a class="er-mini" href="#/emergency" style="margin-left:auto">ER 24x7</a><button class="x" style="margin-left:6px" data-a="chatClose" aria-label="Close chat">✕</button></div>
+  el.innerHTML = `<div class="chat-head">${AVATAR}<div><b>${C.mode === "agent" ? "Ravi, Kobi support" : "Kobi assistant"}</b><small>${C.mode === "agent" ? "A person is replying" : p ? `Helping with ${esc(p.name)}` : "Bookings, orders and vet help"}</small></div><a class="er-mini" href="#/emergency" style="margin-left:auto">ER 24/7</a><button class="x" style="margin-left:6px" data-a="chatClose" aria-label="Close chat">✕</button></div>
     ${C.emergency ? `<div class="chat-alert">Possible emergency. Go to the Kobi ER now.<a href="tel:${ER_PHONE}">Call ER</a></div>` : ""}
     <div class="msgs" id="msgs" role="log" aria-live="polite">${C.msgs.map(m => `<div class="msg ${m.who} ${m.card ? "cardmsg" : ""} ${m.cls}">${m.who === "agent" ? '<div class="who">Ravi, Kobi support</div>' : ""}${m.card ? (m.html ? `<div class="mc">${m.html}</div>` : "") + (typeof m.card === "function" ? m.card() : m.card) : m.html}</div>`).join("")}
       ${C.typing ? '<div class="msg bot"><span class="typing"><i></i><i></i><i></i></span></div>' : ""}</div>
@@ -1116,11 +1144,11 @@ function chatContext(){
     vet:["If something's wrong, tell me what's happening and I'll get you to the right care.", ["My pet is vomiting", "My pet is itching a lot"]],
     er:["Is this an emergency right now? If yes, call the ER first.", [["Yes, it's an emergency", "emergency"], "Just reading"]],
     cart:["Need a hand with your cart?", ["Delivery or collect?", "Track my order"]],
-    checkout:["Stuck at checkout? Ask me about payment, cancellations or the Passport.", ["Can I cancel later?", "Do I need a Passport?"]],
-    spokes:["The nearest spoke is Kobi Hauz Khas, 1.2 km away, open until 10 pm. Green Park, Malviya Nagar and Vasant Vihar are close too.", ["Book a clinic check-up", "Is there a café?"]],
-    pets:["A basic profile is enough to book. Want to know what a Passport adds?", ["What is a Passport?"]],
+    checkout:["Stuck at checkout? Ask me about payment, cancellations or the Pet Health Profile.", ["Can I cancel later?", "Do I need a Pet Passport?"]],
+    spokes:["The nearest Pet Care Centre is Kobi Hauz Khas, 1.2 km away, open until 10 pm. Green Park, Malviya Nagar and Vasant Vihar are close too.", ["Book a clinic check-up", "Is there a café?"]],
+    pets:["A basic profile is enough to book. Want to know what a Pet Health Profile adds?", ["What is a Pet Health Profile?"]],
   }[S.page];
-  if (S.page === "product"){ const x = PRODUCTS.find(y => y.id === id); if (x){ const fl = hasPassport() && x.allergens.find(a => p.passport.allergies.includes(a)); C.msgs.push({who:"bot", html:fl ? `Heads up: ${esc(x.name)} contains ${fl.toLowerCase()}, and ${esc(p.name)}'s Passport lists a ${fl.toLowerCase()} allergy. The lamb and rice food is chicken free.` : `Questions about ${esc(x.name)}? Ask away.`}); C.chips = fl ? [["Show chicken-free food", "go", "#/product/lamb-dog"], "Shop supplies"] : ["Is it in stock at a spoke?", "Delivery or collect?"]; } return; }
+  if (S.page === "product"){ const x = PRODUCTS.find(y => y.id === id); if (x){ const fl = hasPassport() && x.allergens.find(a => p.passport.allergies.includes(a)); C.msgs.push({who:"bot", html:fl ? `Heads up: ${esc(x.name)} contains ${fl.toLowerCase()}, and ${esc(p.name)}'s Pet Health Profile lists a ${fl.toLowerCase()} allergy. The lamb and rice food is chicken free.` : `Questions about ${esc(x.name)}? Ask away.`}); C.chips = fl ? [["Show chicken-free food", "go", "#/product/lamb-dog"], "Shop supplies"] : ["Is it in stock at a Pet Care Centre?", "Delivery or collect?"]; } return; }
   if (S.page === "track"){ C.msgs.push({who:"bot", html:"I'll post updates here as they happen."}); return; }
   if (ctx && C.msgs.length > 1){ C.msgs.push({who:"bot", html:ctx[0]}); C.chips = ctx[1]; }
   else if (ctx){ C.msgs[0].html += " " + ctx[0]; C.chips = ctx[1].concat(["Talk to a vet"]); }
@@ -1154,31 +1182,31 @@ function handle(raw){
   if (/(vet|doctor|consult|teleconsult|video call)/.test(low)) return vetOffer("");
   if (/(who are the walkers|walkers)/.test(low)) return say(`Arjun (★ 4.9, 312 walks) is calm with reactive and large dogs. Meera (★ 4.8, 205 walks) is great with puppies and seniors. Both are background-checked and trained in pet first aid.`, ["Book a walk"]);
   if (/walk/.test(low)) return walkCard();
-  if (/(what do i need for boarding|vaccine.*board|board.*vaccine)/.test(low)) return say(`Day boarding needs a rabies vaccine from the last 12 months. ${hasPassport() ? `${name}'s Passport shows rabies given 12 Nov 2025, so you're set.` : "You can upload a photo of the vaccine card at checkout, or show it at drop-off."}`, ["Pick a boarding date"]);
-  if (/(board|day ?stay|day ?care|pick a boarding)/.test(low)) return say(`Day boarding is ${rs(BOARD_PRICE)} a day at any spoke or the hub, with photo updates through the day.`, [["Pick a boarding date", "go", "#/boarding"], "What do I need for boarding?"], {card:`<img class="wide" src="${IMG.board}" alt="">`});
-  if (/(groom|spa|haircut|nail|trim)/.test(low)) return say(`Grooming and spa is at the flagship hub, from ${rs(999)}: bath, trim, nails and a blow-dry.`, [["Book grooming", "go", "#/book/groom"]]);
-  if (/(spoke|clinic|vaccin|check-?up|near|café|cafe|ice cream)/.test(low)) return say(`Kobi Hauz Khas is 1.2 km away and open until 10 pm. There are also spokes in Green Park, Malviya Nagar and Vasant Vihar. It has a clinic, café, ice cream bar, day stay and shop. Clinic slots today at 4:00 pm and 6:30 pm.`, [["Book a check-up", "go", "#/book/checkup"], ["Book a vaccine", "go", "#/book/vaccine"], ["See all spokes", "go", "#/spokes"]]);
-  if (/(passport|health record|record)/.test(low)) return passportChat();
+  if (/(what do i need for boarding|vaccine.*board|board.*vaccine)/.test(low)) return say(`Day boarding needs a rabies vaccine from the last 12 months. ${hasPassport() ? `${name}'s Pet Health Profile shows rabies given 12 Nov 2025, so you're set.` : "You can upload a photo of the vaccine card at checkout, or show it at drop-off."}`, ["Pick a boarding date"]);
+  if (/(board|day ?stay|day ?care|pick a boarding)/.test(low)) return say(`Day boarding is ${rs(BOARD_PRICE)} a day at any Pet Care Centre or the Kobi 24/7 Emergency Hospital, with photo updates through the day.`, [["Pick a boarding date", "go", "#/boarding"], "What do I need for boarding?"], {card:`<img class="wide" src="${IMG.board}" alt="">`});
+  if (/(groom|spa|haircut|nail|trim)/.test(low)) return say(`Grooming and spa is at the Kobi 24/7 Emergency Hospital, from ${rs(999)}: bath, trim, nails and a blow-dry.`, [["Book grooming", "go", "#/book/groom"]]);
+  if (/find a (spoke|pet care centre)|pet care centre near me/.test(low)) return A.go("#/spokes");
+  if (/(spoke|centre|center|pet care|clinic|vaccin|check-?up|near|café|cafe|ice cream)/.test(low)) return say(`Kobi Hauz Khas is 1.2 km away and open until 10 pm. There are also Pet Care Centres in Green Park, Malviya Nagar and Vasant Vihar. It has a clinic, café, ice cream bar, day stay and shop. Clinic slots today at 4:00 pm and 6:30 pm.`, [["Book a check-up", "go", "#/book/checkup"], ["Book a vaccine", "go", "#/book/vaccine"], ["See all Pet Care Centres", "go", "#/spokes"]]);
+  if (/(passport|health profile|health record|record)/.test(low)) return passportChat();
   if (/(collect|in stock)/.test(low)) return say(`Order online and collect at Kobi Hauz Khas in about 30 minutes, free. Or get it delivered in about 2 hours, free over ${rs(999)}.`, ["Shop supplies"]);
   if (/(buy|shop|supplies|food|toy|bed|leash|bowl|treat)/.test(low)) return shopChat();
   if (/(price|cost|how much|fee|charge)/.test(low)) return say(`Walks: ${rs(299)} for 30 min, ${rs(399)} for 45, ${rs(499)} for 60. Day boarding: ${rs(BOARD_PRICE)}. Video vet: ${rs(TELE_PRICE)} a call. Clinic check-up: ${rs(499)}. All pay per use, no membership.`, ["Book a walk", "Talk to a vet"]);
-  if (/(open|hours|timing|close)/.test(low)) return say("Spokes are open 8 am to 10 pm (Vasant Vihar 9 am to 9 pm). The ER at the flagship hub never closes.", ["Find a spoke"]);
+  if (/(open|hours|timing|close)/.test(low)) return say("Pet Care Centres are open 8 am to 10 pm (Vasant Vihar 9 am to 9 pm). The Kobi 24/7 Emergency Hospital never closes.", ["Find a Pet Care Centre Near Me"]);
   if (/(cancel|resched)/.test(low)) return say("You can cancel free up to 2 hours before. After that, half the price is charged. Reschedule or cancel from Bookings and orders.", [["Open my bookings", "go", "#/account"]]);
   if (/(my bookings|booking|appointment)/.test(low)) return bookingsChat();
-  if (/\b(er|emergency|hospital|hub)\b/.test(low)) return say("The Kobi 24x7 ER is at the flagship hub, about 12 minutes by car. Is this an emergency right now?", [["Yes, it's an emergency", "emergency"], "No, just asking"]);
+  if (/\b(er|emergency|hospital|hub)\b/.test(low)) return say("The Kobi 24/7 Emergency Hospital is about 12 minutes by car. Is this an emergency right now?", [["Yes, it's an emergency", "emergency"], "No, just asking"]);
   if (/^(hi|hello|hey|namaste|good (morning|evening|afternoon))/.test(low)) return say(`Hello! ${p ? `What can I help ${name} with?` : "What can I help with?"}`, DEFAULT_CHIPS);
   if (/(just browsing|just reading|no,? just asking)/.test(low)) return say("Sure. I'm here if you need anything.", []);
   if (/(thank|great|ok|okay|cool)/.test(low)) return say("Anytime.", DEFAULT_CHIPS);
-  if (/find a spoke/.test(low)) return A.go("#/spokes");
   C.misses++;
   if (C.misses >= 2){ C.misses = 0; return say("I'm not getting this right. Want me to bring in someone from the Kobi team?", [["Yes, talk to a person", "human"], "No, show me options"]); }
-  say("I can help with walks, day boarding, vet calls, supplies, orders and spokes. Which one?", DEFAULT_CHIPS);
+  say("I can help with walks, day boarding, vet calls, supplies, orders and Pet Care Centres. Which one?", DEFAULT_CHIPS);
 }
 
 function emergency(){
   C.emergency = true; C.triage = null;
   const p = pet();
-  say("", [], {card:`<div class="mc emerg"><h4>This could be an emergency.</h4><p>Go to the Kobi 24x7 ER now. Call on the way so the team is ready.</p>
+  say("", [], {card:`<div class="mc emerg"><h4>This could be an emergency.</h4><p>Go to the Kobi 24/7 Emergency Hospital now. Call on the way so the team is ready.</p>
     <div class="row"><a class="btn er sm" href="tel:${ER_PHONE}">Call the ER</a><a class="btn ghost sm" href="#/emergency">Directions</a></div>
     <p class="small" style="margin:10px 0 0">${hasPassport() ? `✓ ${esc(p.name)}'s record has been sent ahead to the ER team.` : "Tell the ER team your pet's age, weight and any medicines when you call."}</p></div>`, delay:150});
   if (hasPassport()) S.recordSent = true;
@@ -1199,20 +1227,20 @@ function triageStep(ans){
 function vetOffer(lead, urgent){
   const v = VETS[0];
   say(lead || "You can talk to a Kobi vet on video right now.", [], {card:`<div class="mc"><div class="mini-person"><img src="${IMG[v.img]}" alt=""><div><b>${v.name}</b><div class="small muted">Free in about 6 minutes</div></div></div>
-    <p class="small" style="margin:6px 0">${rs(TELE_PRICE)} per call, credited if you're seen at a spoke or the ER within 48 hours.</p>
+    <p class="small" style="margin:6px 0">${rs(TELE_PRICE)} per call, credited if you're seen at a Pet Care Centre or the ER within 48 hours.</p>
     <div class="row"><button class="btn primary sm" data-a="chatTele">Start a video consult</button><a class="btn ghost sm" href="#/book/checkup">${urgent ? "Clinic slot today" : "Book the clinic"}</a></div></div>`});
 }
 function careAnswer(k){
   const p = pet();
   let extra = "";
-  if (k === "food" && hasPassport()) extra = ` ${esc(p.name)}'s Passport says ${esc(p.passport.diet.toLowerCase())}, with a ${esc(p.passport.allergies[0].toLowerCase())} allergy, so check labels.`;
+  if (k === "food" && hasPassport()) extra = ` ${esc(p.name)}'s Pet Health Profile says ${esc(p.passport.diet.toLowerCase())}, with a ${esc(p.passport.allergies[0].toLowerCase())} allergy, so check labels.`;
   say(CARE[k][1] + extra, ["Ask a vet", "Shop supplies"]);
 }
 function productFit(x){
   const p = pet(), hit = hasPassport() && x.allergens.find(a => p.passport.allergies.includes(a));
   if (hit) return say(`I'd skip this one: it contains ${hit.toLowerCase()}, and ${esc(p.name)} is allergic. The lamb and rice food is chicken free.`, [["Show lamb and rice food", "go", "#/product/lamb-dog"]]);
   if (p && x.sp !== "All" && x.sp !== p.species) return say(`This is made for ${x.sp.toLowerCase()}s, so it's not a match for ${esc(p.name)}.`, ["Shop supplies"]);
-  say(`${esc(x.name)} looks fine for ${p ? esc(p.name) : "most pets"}. ${hasPassport() ? "Nothing in it matches the allergies in the Passport." : "If your pet has allergies, check the ingredients on the product page."}`, [["Add to cart", "addChat", x.id], "Ask a vet"]);
+  say(`${esc(x.name)} looks fine for ${p ? esc(p.name) : "most pets"}. ${hasPassport() ? "Nothing in it matches the allergies in the Pet Health Profile." : "If your pet has allergies, check the ingredients on the product page."}`, [["Add to cart", "addChat", x.id], "Ask a vet"]);
 }
 function walkCard(){
   const s = S.sel.chatWalk, w = WALKERS[0];
@@ -1247,8 +1275,8 @@ function shopChat(){
 }
 function passportChat(){
   const p = pet();
-  if (hasPassport()) return say(`${esc(p.name)}'s Passport is up to date except the deworming, which was due on 2 Sep.`, [["Open the Passport", "go", "#/passport/" + p.id], ["Book at a spoke", "go", "#/book/vaccine"]]);
-  say("A Pet Passport keeps vaccines, allergies, diet and vet visits in one place. It's optional: you can book everything without it. With it, bookings fill in, reminders arrive on time, and the ER sees the history on arrival.", p ? [["Create a Passport", "go", "#/passport/" + p.id]] : [["Add a pet", "go", "#/pets"]]);
+  if (hasPassport()) return say(`${esc(p.name)}'s Pet Health Profile is up to date except the deworming, which was due on 2 Sep.`, [["Open the Pet Health Profile", "go", "#/passport/" + p.id], ["Book at a Centre", "go", "#/book/vaccine"]]);
+  say("A Pet Passport keeps vaccines, allergies, diet and vet visits in one place. It's optional: you can book everything without it. With it, bookings fill in, reminders arrive on time, and the ER sees the history on arrival.", p ? [["Create a Pet Health Profile", "go", "#/passport/" + p.id]] : [["Add a pet", "go", "#/pets"]]);
 }
 
 /* chat actions */
@@ -1275,6 +1303,8 @@ function ratingCardChat(b){ const w = WALKERS.find(x => x.id === b.meta.walker) 
 
 /* ---------- wiring ---------- */
 document.addEventListener("click", e => {
+  const bookMenu = document.querySelector("nav.main details.book");
+  if (bookMenu && bookMenu.open && !bookMenu.contains(e.target)) bookMenu.open = false;
   const t = e.target.closest("[data-a]"); if (!t) return;
   const fn = A[t.dataset.a]; if (!fn) return;
   if (t.tagName !== "INPUT") e.preventDefault();
