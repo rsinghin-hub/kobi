@@ -381,6 +381,12 @@ details.faq summary{cursor:pointer;font-weight:600;padding:12px 0}
   .invite{grid-template-columns:1fr}
   .invite img{max-width:140px}
 }
+body.locked .skip,body.locked header,body.locked main,body.locked footer,body.locked .launcher,body.locked .chat,body.locked .toast{display:none}
+.gate{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+body.locked .gate{display:flex}
+.gate .card{width:min(420px,100%)}
+.gate h1{color:var(--teal);font-size:2rem;margin:0 0 8px}
+.gate .hint{color:var(--er)}
 
 /* logo */
 .brand img.logo{height:54px;width:auto;object-fit:contain}
@@ -486,7 +492,14 @@ table.req th{width:40%;font-weight:600}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
-<body>
+<body class="locked">
+<div class="gate" id="gate"><form class="card" id="gateForm">
+  <h1>Koby</h1>
+  <p class="muted">Enter the password to open the prototype.</p>
+  <label class="field"><span>Password</span><input class="input" id="gatePw" type="password" autocomplete="current-password" autofocus></label>
+  <p class="hint" id="gateErr" hidden>That password is not right.</p>
+  <button class="btn primary block" type="submit">Continue</button>
+</form></div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="top"><div class="wrap bar" id="bar"></div></header>
 <main id="main" tabindex="-1"></main>
@@ -1609,7 +1622,21 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && C.listening && C.rec){ C.rec.stop(); return; }
   if (e.key === "Escape" && C.open) A.chatClose();
 });
-renderFoot(); renderLauncher(); render();
+const PAGE_PASSWORD = "robinebix";
+const GATE_KEY = "koby-open";
+function openPrototype(){
+  sessionStorage.setItem(GATE_KEY, "1");
+  document.body.classList.remove("locked");
+  const g = document.getElementById("gate"); if (g) g.hidden = true;
+  renderFoot(); renderLauncher(); render();
+}
+if (sessionStorage.getItem(GATE_KEY) === "1") openPrototype();
+else document.getElementById("gateForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const input = document.getElementById("gatePw");
+  if (input.value.trim() === PAGE_PASSWORD) openPrototype();
+  else { document.getElementById("gateErr").hidden = false; input.value = ""; input.focus(); }
+});
 </script>
 </body>
 </html>
