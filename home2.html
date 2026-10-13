@@ -299,9 +299,9 @@ details.faq summary{cursor:pointer;font-weight:600;padding:12px 0}
 .chat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--teal);color:#fff}
 .chat-head svg.av{width:40px;height:40px;flex:0 0 40px}
 .chat-head b{display:block;font-family:var(--display);font-size:1.05rem}
-.chat-head small{opacity:.85}
+.chat-head small{opacity:.85;display:block;font-size:.76rem;line-height:1.25;margin-top:1px}
 .chat-head .x{margin-left:auto;background:rgba(255,255,255,.18);border:0;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1.1rem}
-.chat-head .er-mini{background:#fff;color:var(--er);text-decoration:none;font-weight:700;font-size:.8rem;padding:6px 10px;border-radius:999px}
+.chat-head .er-mini{white-space:nowrap;flex:0 0 auto;background:#fff;color:var(--er);text-decoration:none;font-weight:700;font-size:.8rem;padding:6px 10px;border-radius:999px}
 .chat-alert{background:var(--er);color:#fff;padding:10px 14px;display:flex;gap:10px;align-items:center;font-weight:600;font-size:.92rem}
 .chat-alert a{margin-left:auto;white-space:nowrap;background:#fff;color:var(--er);text-decoration:none;padding:6px 12px;border-radius:999px}
 .msgs{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
@@ -1724,7 +1724,7 @@ function renderChat(){
   const keep = $("#chatInput") ? $("#chatInput").value : "";
   el.classList.add("open");
   const p = pet();
-  el.innerHTML = `<div class="chat-head">${logoMark()}<div><b>${C.mode === "agent" ? "Ravi, Koby support" : "Koby AI"}</b><small>${C.mode === "agent" ? "A person is replying" : p ? `Helping with ${esc(p.name)}` : "Bookings, orders and vet help"}</small></div><a class="er-mini" href="#/emergency" style="margin-left:auto">ER 24/7</a><button class="x" style="margin-left:6px" data-a="chatClose" aria-label="Close chat">✕</button></div>
+  el.innerHTML = `<div class="chat-head">${logoMark()}<div><b>${C.mode === "agent" ? "Ravi, Koby support" : "Koby AI"}</b><small>${C.mode === "agent" ? "A person is replying" : "World's Only 360 Degrees End to End Exchange for Pets"}</small></div><a class="er-mini" href="#/emergency" style="margin-left:auto">ER 24/7</a><button class="x" style="margin-left:6px" data-a="chatClose" aria-label="Close chat">✕</button></div>
     ${C.emergency ? `<div class="chat-alert">Possible emergency. Go to the Koby ER now.<a href="tel:${ER_PHONE}">Call ER</a></div>` : ""}
     <div class="msgs" id="msgs" role="log" aria-live="polite">${C.msgs.map(m => `<div class="msg ${m.who} ${m.card ? "cardmsg" : ""} ${m.cls}">${m.who === "agent" ? '<div class="who">Ravi, Koby support</div>' : ""}${m.card ? (m.html ? `<div class="mc">${m.html}</div>` : "") + (typeof m.card === "function" ? m.card() : m.card) : m.html}</div>`).join("")}
       ${C.typing ? '<div class="msg bot"><span class="typing"><i></i><i></i><i></i></span></div>' : ""}</div>
