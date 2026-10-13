@@ -661,6 +661,20 @@ table.req th{width:40%;font-weight:600}
 .cd-list .ci-img.product-shot img{padding:4px}
 .cd-list .ci-t{padding:0}
 @media (max-width:640px){.cd-list{grid-template-columns:1fr}.cd-list .ci-img{flex-basis:56px;width:56px;height:56px}}
+
+/* headline above the category panel */
+.cat-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-rows:auto 1fr;grid-template-areas:"stage intro" "stage panel";column-gap:clamp(28px,3.5vw,52px);row-gap:clamp(14px,2.2vh,26px);align-items:start}
+.cat-hero .fs-stage{grid-area:stage;align-self:center}
+.cat-intro{grid-area:intro;align-self:end;padding-top:clamp(8px,2vh,24px)}
+.cat-intro h1{font-family:var(--display);font-weight:750;font-size:clamp(2.1rem,3.7vw,3.7rem);line-height:1.02;letter-spacing:-.03em;margin:0 0 clamp(10px,1.6vh,16px);color:var(--ink);text-wrap:balance}
+.cat-intro h1 span{display:block;color:var(--teal)}
+.cat-intro .lede{margin:0;max-width:56ch;font-size:clamp(1rem,1.25vw,1.15rem)}
+.cat-right{grid-area:panel}
+@media (max-width:900px){
+  .cat-hero{grid-template-columns:1fr;grid-template-rows:auto;grid-template-areas:"intro" "stage" "panel";row-gap:18px}
+  .cat-intro{align-self:start;text-align:center}
+  .cat-intro .lede{margin:0 auto}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -878,12 +892,11 @@ P.home = () => {
   const overdue = hasPassport() && p.passport.vaccines.find(v => v.st === "bad");
   return `
   <section class="wrap fs-hero cat-hero" id="heroSlider" aria-label="Koby categories">
-    <h1 class="vh">Koby: World's Only 360 Degrees End to End Exchange for Pets</h1>
     <div class="fs-stage">
       <div class="fs-ring" aria-hidden="true"></div>
       <div class="fs-focus" aria-hidden="true"></div>
       ${fsDog()}
-      <svg class="fs-tag" viewBox="0 0 100 100" aria-hidden="true">
+      <svg class="fs-tag" viewBox="0 0 100 100" role="img" aria-label="World's Only 360 Degrees End to End Exchange for Pets">
         <defs><path id="tagTop" d="M 32.3 50 A 17.7 17.7 0 0 1 67.7 50"/><path id="tagBot" d="M 30.1 50 A 19.9 19.9 0 0 0 69.9 50"/></defs>
         <text><textPath href="#tagTop" startOffset="50%" text-anchor="middle">WORLD'S ONLY 360° END TO END</textPath></text>
         <text><textPath href="#tagBot" startOffset="50%" text-anchor="middle">EXCHANGE FOR PETS</textPath></text>
@@ -891,8 +904,11 @@ P.home = () => {
       </svg>
       <div class="fs-orbit" id="fsOrbit" role="group" aria-label="Choose a category">${catBoxes()}</div>
     </div>
+    <div class="cat-intro">
+      <h1>Every little thing they need. <span>One happy place.</span></h1>
+      <p class="lede">From everyday essentials to expert care and pet-friendly adventures, discover all the ways Koby helps your pet live their happiest life.</p>
+    </div>
     <div class="cat-right">
-      <p class="status"><span class="dot"></span>The Koby ER is open now, 24 hours a day</p>
       <div class="cat-panel">
         <div class="cd-body in" id="catDetail" aria-live="polite"></div>
       </div>
