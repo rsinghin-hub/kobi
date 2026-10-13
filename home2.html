@@ -675,6 +675,7 @@ table.req th{width:40%;font-weight:600}
   .cat-intro{align-self:start;text-align:center}
   .cat-intro .lede{margin:0 auto}
 }
+.pf-preview{width:96px;height:96px;border-radius:18px;object-fit:cover;margin-top:10px;background:var(--sand)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -808,6 +809,32 @@ const S = {
 const pet = () => S.pets.find(p => p.id === S.active) || null;
 const petName = () => pet() ? pet().name : "your pet";
 const hasPassport = () => !!(pet() && pet().passport);
+function petSrc(p){ return p && (p.photo || IMG[p.img]) || IMG.p_indie; }
+function defaultPetImg(species, breed){
+  const who = species === "Cat" ? "cat" : species === "Dog" ? "dog" : "";
+  if (who){ const row = (BREEDS[who] || []).find(x => x[0] === breed); if (row) return row[1]; return who === "dog" ? "b_other" : "c_indie"; }
+  return {Birds:"w_bird", Rabbit:"w_rabbit", Fish:"w_fish"}[species] || "p_indie";
+}
+function readPetPhoto(file){
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 800, scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(img.width * scale)); c.height = Math.max(1, Math.round(img.height * scale));
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      S.pf = S.pf || {};
+      S.pf.photo = c.toDataURL("image/jpeg", 0.82);
+      const name = $("#pfName"), age = $("#pfAge"), other = $("#pfOther");
+      if (name) S.pf.name = name.value; if (age) S.pf.age = age.value; if (other) S.pf.other = other.value;
+      render(true);
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
 
 function day(offset){ const d = new Date(); d.setDate(d.getDate() + offset); return d; }
 function dayLabel(offset){ if (offset === 0) return "Today"; if (offset === 1) return "Tomorrow"; return day(offset).toLocaleDateString("en-IN", {weekday:"short", day:"numeric", month:"short"}); }
@@ -867,7 +894,7 @@ function renderBar(){
     </nav>
     <span class="spacer"></span>
     <a class="erbtn" href="#/emergency"><span class="pulse"></span>ER<span class="lbl-long">&nbsp;24/7</span></a>
-    ${p ? `<a class="petpill" href="#/pets" title="Active pet"><img src="${IMG[p.img] || IMG.p_indie}" alt=""><span>${esc(p.name)}</span></a>` : ""}
+    ${p ? `<a class="petpill" href="#/pets" title="Active pet"><img src="${petSrc(p)}" alt=""><span>${esc(p.name)}</span></a>` : ""}
     <a class="iconbtn" href="#/cart" aria-label="Cart, ${count} items">${I.cart}${count ? `<span class="badge">${count}</span>` : ""}</a>
     <a class="iconbtn" href="#/account" aria-label="Account">${I.user}</a>
     <button class="iconbtn menu-toggle" data-a="menu" aria-label="Menu" aria-expanded="${S.menu}">${I.menu}</button>`;
@@ -915,7 +942,7 @@ P.home = () => {
       ${live ? `<a class="fs-live" href="#/track/${live.id}"><img src="${IMG.s_arjun}" alt=""><span><b><span class="live-dot"></span>${esc(p.name)}'s walk is live</b><small>Tap to follow the route</small></span></a>` : ""}
     </div>
   </section>
-  ${overdue ? `<section class="wrap"><div class="reminder"><img src="${IMG[p.img]}" alt=""><div style="flex:1"><b>${esc(p.name)}'s ${overdue.name.toLowerCase()} was due on ${overdue.due}.</b><div class="muted small">It takes ten minutes at any Pet Care Centre.</div></div><a class="btn primary sm" href="#/book/vaccine">Book at a Centre</a></div></section>` : ""}
+  ${overdue ? `<section class="wrap"><div class="reminder"><img src="${petSrc(p)}" alt=""><div style="flex:1"><b>${esc(p.name)}'s ${overdue.name.toLowerCase()} was due on ${overdue.due}.</b><div class="muted small">It takes ten minutes at any Pet Care Centre.</div></div><a class="btn primary sm" href="#/book/vaccine">Book at a Centre</a></div></section>` : ""}
   <section class="wrap section">
     <div class="section-head"><h2>What does ${p ? esc(p.name) : "your pet"} need today?</h2></div>
     <div class="tiles">
@@ -1227,7 +1254,7 @@ P.checkout = () => {
   else {
     const p = pet();
     body = `<h2>Pay ${rs(d.total)}</h2>
-      ${p && d.needsPet ? `<div class="row" style="margin-bottom:14px"><img src="${IMG[p.img] || IMG.p_indie}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover"><span>For <b>${esc(p.name)}</b>${hasPassport() ? ' <span class="pill ok">Pet Passport</span>' : ""}</span></div>` : ""}
+      ${p && d.needsPet ? `<div class="row" style="margin-bottom:14px"><img src="${petSrc(p)}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover"><span>For <b>${esc(p.name)}</b>${hasPassport() ? ' <span class="pill ok">Pet Passport</span>' : ""}</span></div>` : ""}
       ${d.needsPet ? `<label class="field"><span>Notes for the team</span><textarea class="input" placeholder="Allergies, medicines, behaviour">${hasPassport() ? esc(`Allergic to ${p.passport.allergies.join(", ").toLowerCase()}. ${p.passport.diet}.`) : ""}</textarea>${hasPassport() ? '<div class="hint">Filled in from the Pet Health Profile.</div>' : '<div class="hint">Optional.</div>'}</label>` : ""}
       <div class="pay">${[["upi", "UPI", "Pay from any UPI app"], ["card", "Card", "Visa, Mastercard, RuPay"], ["wallet", "Wallet", "Paytm, PhonePe, Amazon Pay"]].map(([v, l, s], i) => `<label><input type="radio" name="pm" value="${v}" ${i === 0 ? "checked" : ""}><span><b>${l}</b><br><span class="muted small">${s}</span></span></label>`).join("")}</div>
       <button class="btn primary block" style="margin-top:18px" data-a="pay" id="payBtn">Pay ${rs(d.total)}</button>
@@ -1242,12 +1269,19 @@ P.checkout = () => {
 function petBasicsForm(type, ctx){
   const f = S.pf = S.pf || {species:"Dog", size:"Medium", temper:"Friendly"};
   const needSize = ["walk", "board", "groom", "suite"].includes(type), needTemper = type === "walk", needAge = ["tele", "clinic"].includes(type);
+  const speciesList = ctx === "add" ? ["Dog", "Cat", "Birds", "Rabbit", "Fish"] : ["Dog", "Cat"];
+  const who = ctx === "add" ? (f.species === "Cat" ? "cat" : f.species === "Dog" || !f.species ? "dog" : "") : "";
+  const breeds = who ? BREEDS[who] : null;
+  const breedBlock = breeds ? `<div class="wlabel">Breed</div><div class="slots">${breeds.map(([n]) => `<button class="chip ${f.breed === n ? "on" : ""}" data-a="pf" data-v="breed:${n}">${n}</button>`).join("")}</div>${f.breed === "Others" ? `<label class="field" style="margin-top:14px"><span>Breed name</span><input class="input" id="pfOther" placeholder="Type the breed, for example Dachshund" value="${esc(f.other || "")}"></label>` : ""}` : "";
+  const photoBlock = ctx === "add" ? `<div class="wlabel">Photo</div><div class="row"><label class="btn ghost sm">Upload photo<input id="pfUpload" type="file" accept="image/*" hidden></label><label class="btn ghost sm">Take photo<input id="pfCamera" type="file" accept="image/*" capture="environment" hidden></label></div>${f.photo ? `<img class="pf-preview" src="${f.photo}" alt="Chosen pet photo">` : `<p class="hint">Optional. Upload a picture, or take one with the camera.</p>`}` : "";
   return `<h2>${ctx === "co" ? "A few details about your pet" : "Add a pet"}</h2><p class="muted">${ctx === "co" ? "Only what this booking needs. You can add more later, or create a full Pet Health Profile." : "A basic profile is enough to book anything."}</p>
     <label class="field"><span>Name</span><input class="input" id="pfName" placeholder="Bruno" value="${esc(f.name || "")}"></label>
-    <div class="wlabel">Species</div><div class="slots">${["Dog", "Cat"].map(x => `<button class="chip ${f.species === x ? "on" : ""}" data-a="pf" data-v="species:${x}">${x}</button>`).join("")}</div>
+    <div class="wlabel">Species</div><div class="slots">${speciesList.map(x => `<button class="chip ${f.species === x ? "on" : ""}" data-a="pf" data-v="species:${x}">${x}</button>`).join("")}</div>
+    ${breedBlock}
     ${needSize || ctx !== "co" ? `<div class="wlabel">Size</div><div class="slots">${["Small", "Medium", "Large"].map(x => `<button class="chip ${f.size === x ? "on" : ""}" data-a="pf" data-v="size:${x}">${x}</button>`).join("")}</div>` : ""}
     ${needTemper ? `<div class="wlabel">On walks, they are</div><div class="slots">${["Friendly", "Shy", "Reactive to dogs", "Pulls hard"].map(x => `<button class="chip ${f.temper === x ? "on" : ""}" data-a="pf" data-v="temper:${x}">${x}</button>`).join("")}</div>` : ""}
     ${needAge || ctx !== "co" ? `<label class="field" style="margin-top:14px"><span>Age</span><input class="input" id="pfAge" placeholder="4 years" value="${esc(f.age || "")}"></label>` : ""}
+    ${photoBlock}
     <button class="btn primary" style="margin-top:16px" data-a="savePet" data-v="${ctx}">${ctx === "co" ? "Continue" : "Save pet"}</button>`;
 }
 
@@ -1335,7 +1369,7 @@ function trackTele(b, p){
       <p class="muted small">${p.passport ? `Saved to ${esc(p.name)}'s Pet Health Profile.` : "Saved to the basic profile."}</p>
       ${p.passport ? "" : `<a class="btn ghost sm" href="#/passport/${p.id}">Turn this into a Pet Health Profile</a>`} <a class="btn primary sm" href="#/book/checkup">Book a follow-up</a></div></div>
     <div class="report">${ratingBlock(b, v.name)}</div></div>`;
-  if (b.status === "live") return `<div class="wrap track"><div><h1>In a call with ${v.name}</h1><div class="video"><img src="${IMG[v.img]}" alt="${v.name} on video"><img class="self" src="${IMG[p.img] || IMG.p_tabby}" alt="Your camera">
+  if (b.status === "live") return `<div class="wrap track"><div><h1>In a call with ${v.name}</h1><div class="video"><img src="${IMG[v.img]}" alt="${v.name} on video"><img class="self" src="${petSrc(p)}" alt="Your camera">
       <div class="ctrls"><button aria-label="Mute">🎤</button><button aria-label="Camera">📷</button><button class="end" data-a="endCall" data-v="${b.id}">End call</button></div></div></div>
       <div class="report"><b>${v.name} can see</b><ul class="small"><li>Your description of the problem</li>${p.passport ? `<li>${esc(p.name)}'s Pet Health Profile: vaccines, allergies, past visits</li>` : `<li>${esc(p.name)}'s basic profile</li>`}<li>Photos you upload in chat</li></ul><button class="btn ghost sm" data-a="chat">Open chat beside the call</button></div></div>`;
   return `<div class="wrap track"><div><h1>Video room</h1><div class="video"><img src="${IMG.tele}" alt=""></div></div>
@@ -1369,20 +1403,17 @@ P.account = () => {
         <div class="row">${x.status === "upcoming" || x.status === "live" ? `<a class="btn primary sm" href="#/track/${x.id}">${x.type === "tele" ? "Video room" : "Open"}</a>${x.status === "upcoming" ? `<button class="btn ghost sm" data-a="cancel" data-v="${x.id}">Cancel</button>` : ""}` : x.status === "done" ? `<a class="btn ghost sm" href="#/track/${x.id}">${x.rating ? `★ ${x.rating}` : "Rate"}</a>${x.type === "walk" ? `<button class="btn ghost sm" data-a="rebook" data-v="${x.meta.walker}">Book again</button>` : ""}` : ""}</div></div>`).join("") : empty}</div></div>`;
 };
 P.pets = () => `<div class="wrap" style="padding-top:30px"><h1>My pets</h1><p class="muted">A basic profile is all you need to book. Add a Pet Health Profile for reminders and shared health records.</p>
-  ${S.pets.length ? `<div class="pets">${S.pets.map(p => `<div class="petcard"><img src="${IMG[p.img] || IMG.p_indie}" alt=""><h3>${esc(p.name)}</h3><div class="muted small">${esc([p.species, p.size, p.age].filter(Boolean).join(", "))}</div>
+  ${S.pets.length ? `<div class="pets">${S.pets.map(p => `<div class="petcard"><img src="${petSrc(p)}" alt=""><h3>${esc(p.name)}</h3><div class="muted small">${esc([p.species, p.breed, p.size, p.age].filter(Boolean).join(", "))}</div>
     <div style="margin:10px 0">${p.passport ? '<span class="pill ok">Pet Passport</span>' : '<span class="pill">Basic profile</span>'} ${S.active === p.id ? '<span class="pill warn">Active</span>' : ""}</div>
     <div class="row" style="justify-content:center">${p.passport ? `<a class="btn primary sm" href="#/passport/${p.id}">Open Pet Health Profile</a>` : `<a class="btn primary sm" href="#/passport/${p.id}">Create Pet Health Profile</a>`}${S.active !== p.id ? `<button class="btn ghost sm" data-a="activate" data-v="${p.id}">Make active</button>` : ""}</div></div>`).join("")}</div>` : ""}
   <div style="margin-top:26px">${S.petForm ? `<div class="card" style="max-width:560px">${petBasicsForm("add", "add")}</div>` : `<button class="btn ghost" data-a="petForm">Add a pet</button>`}</div></div>`;
 
-const AVATARS = ["p_indie", "p_lab", "p_beagle", "p_tabby", "p_persian", "p_senior"];
 P.passport = id => {
   const p = S.pets.find(x => x.id === id);
   if (!p) return `<div class="wrap empty"><img src="${IMG.i_passport}" alt=""><h1 style="font-size:2rem">Add a pet first</h1><p class="muted">A Pet Health Profile belongs to a pet. Add one, then create the Pet Health Profile.</p><a class="btn primary" href="#/pets">Add a pet</a></div>`;
   if (!p.passport) return `<div class="wrap" style="padding-top:30px;max-width:760px"><div class="crumbs"><a href="#/pets">My pets</a> / Pet Health Profile</div><h1>${esc(p.name)}'s Pet Health Profile</h1>
     <p class="muted">Everything is optional. Skip what you don't know and add it later.</p>
-    <div class="card"><div class="wlabel">Photo</div><div class="slots">${AVATARS.map(a => `<button class="chip ${p.img === a ? "on" : ""}" data-a="ppImg" data-v="${p.id}:${a}" style="padding:3px"><img src="${IMG[a]}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover"></button>`).join("")}</div>
-      <label class="field" style="margin-top:16px"><span>Breed</span><input class="input" id="ppBreed" value="${esc(p.breed || "")}" placeholder="Indie"></label>
-      <label class="field"><span>Weight</span><input class="input" id="ppWeight" placeholder="22 kg"></label>
+    <div class="card"><label class="field"><span>Weight</span><input class="input" id="ppWeight" placeholder="22 kg"></label>
       <label class="field"><span>Rabies vaccine date</span><input class="input" id="ppRabies" type="date"></label>
       <label class="field"><span>Allergies</span><input class="input" id="ppAllergy" placeholder="Chicken, fleas"></label>
       <label class="field"><span>Diet</span><input class="input" id="ppDiet" placeholder="Dry food, twice a day"></label>
@@ -1392,7 +1423,7 @@ P.passport = id => {
       <div class="row"><button class="btn primary" data-a="savePassport" data-v="${p.id}">Save Pet Health Profile</button><a class="btn ghost" href="#/pets">Not now</a></div></div></div>`;
   const pp = p.passport;
   return `<div class="wrap"><div class="crumbs" style="margin-top:24px"><a href="#/pets">My pets</a> / Pet Health Profile</div>
-    <div class="pp-head" style="margin-top:8px"><img src="${IMG[p.img]}" alt=""><div><h1 style="margin:0">${esc(p.name)}</h1><div class="facts"><div><span>Species</span>${esc(p.species)}</div><div><span>Breed</span>${esc(p.breed || "Not added")}</div><div><span>Age</span>${esc(p.age || "Not added")}</div><div><span>Weight</span>${esc(p.weight || "Not added")}</div></div>
+    <div class="pp-head" style="margin-top:8px"><img src="${petSrc(p)}" alt=""><div><h1 style="margin:0">${esc(p.name)}</h1><div class="facts"><div><span>Species</span>${esc(p.species)}</div><div><span>Breed</span>${esc(p.breed || "Not added")}</div><div><span>Age</span>${esc(p.age || "Not added")}</div><div><span>Weight</span>${esc(p.weight || "Not added")}</div></div>
       <p class="muted small" style="margin-top:10px">Microchip ${esc(pp.chip || "not added")}</p></div>
       <div style="text-align:center">${qrSvg(p.id)}<div class="small muted">Show at any clinic</div></div></div>
     <div class="pp-grid"><div class="card"><h3>Vaccines and care</h3>${pp.vaccines.length ? `<table class="vax"><thead><tr><th>Vaccine</th><th>Given</th><th>Next due</th><th>Status</th></tr></thead><tbody>${pp.vaccines.map(v => `<tr><td>${v.name}</td><td>${v.date}</td><td>${v.due}</td><td><span class="pill ${v.st}">${{ok:"Up to date", warn:"Due soon", bad:"Overdue"}[v.st]}</span></td></tr>`).join("")}</tbody></table>` : '<p class="muted">No vaccines added yet.</p>'}
@@ -1566,7 +1597,8 @@ function fsLayout(){
     if (d < bestD){ bestD = d; best = i; }
     const near = Math.max(0, 1 - d / CAT_STEP), sc = 1 + 0.12 * near;
     const el = o.children[i];
-    el.style.transform = `translate(-50%,-50%) translate(${(-R * Math.sin(rad)).toFixed(1)}px,${(R * Math.cos(rad)).toFixed(1)}px) scale(${sc.toFixed(3)})`;
+    const hw = el.offsetWidth / 2, hh = el.offsetHeight / 2;
+    el.style.transform = `translate3d(${(-R * Math.sin(rad) - hw).toFixed(1)}px,${(R * Math.cos(rad) - hh).toFixed(1)}px,0) scale(${sc.toFixed(3)})`;
     el.style.zIndex = Math.round(near * 10) + 1;
   }
   if (best !== FS.hot){
@@ -1577,7 +1609,8 @@ function fsLayout(){
     if (cnt) cnt.innerHTML = `<b>0${best + 1}</b> / 0${CAT_N}`;
   }
 }
-const fsPaused = () => !!document.querySelector(".fs-stage:hover, .cat-panel:hover, #heroSlider :focus-visible");
+const CAN_HOVER = matchMedia("(hover: hover) and (pointer: fine)").matches;
+const fsPaused = () => CAN_HOVER && !!document.querySelector(".fs-stage:hover, .cat-panel:hover, #heroSlider :focus-visible");
 function fsTick(ts){
   const o = $("#fsOrbit"); if (!o){ FS.raf = null; FS.last = 0; return; }
   const dt = FS.last ? Math.min(ts - FS.last, 64) : 0; FS.last = ts;
@@ -1644,10 +1677,26 @@ A.dl = (v, el) => { S.delivery = el.value; render(true); };
 A.sendOtp = () => { const ph = $("#phone").value.trim(); if (ph.replace(/\D/g, "").length < 10){ toast("Enter a 10-digit mobile number"); return; } S.otp = {phone:ph, sent:true}; render(true); toast("Code sent. Use 1234"); };
 A.otpBack = () => { S.otp.sent = false; render(true); };
 A.verifyOtp = () => { if ($("#otp").value.trim() !== "1234"){ toast("That code doesn't match. Try 1234"); return; } signIn(S.otp.phone); toast(S.user.name ? `Welcome back, ${S.user.name}` : "Signed in"); render(true); };
-A.pf = v => { const [k, val] = v.split(":"); S.pf = S.pf || {}; S.pf.name = ($("#pfName") || {}).value || S.pf.name; S.pf.age = ($("#pfAge") || {}).value || S.pf.age; S.pf[k] = val; render(true); };
+A.pf = v => { const [k, val] = v.split(":"); S.pf = S.pf || {};
+  const name = $("#pfName"), age = $("#pfAge"), other = $("#pfOther");
+  if (name) S.pf.name = name.value; if (age) S.pf.age = age.value; if (other) S.pf.other = other.value;
+  if (k === "species" && val !== S.pf.species){ S.pf.breed = ""; S.pf.other = ""; }
+  if (k === "breed") S.pf.breed = val; else S.pf[k] = val;
+  render(true);
+  if (S.pf.breed === "Others") setTimeout(() => $("#pfOther") && $("#pfOther").focus(), 30); };
 A.savePet = ctx => { const name = $("#pfName").value.trim(); if (!name){ toast("Add your pet's name"); return; }
-  const f = S.pf || {}, img = f.species === "Cat" ? "p_tabby" : "p_beagle";
-  const p = {id:name.toLowerCase().replace(/\W/g, "") + S.pets.length, name, species:f.species || "Dog", size:f.size, age:($("#pfAge") || {}).value || "", temper:f.temper, img, passport:null};
+  const f = S.pf || {}, species = f.species || "Dog";
+  let breed = "", photo = "", img = species === "Cat" ? "p_tabby" : "p_beagle";
+  if (ctx === "add"){
+    if (species === "Dog" || species === "Cat"){
+      if (f.breed === "Others"){ breed = (($("#pfOther") || {}).value || f.other || "").trim(); if (!breed){ toast("Type the breed"); return; } }
+      else breed = f.breed || "";
+      if (!breed){ toast("Choose a breed"); return; }
+    }
+    photo = f.photo || "";
+    img = defaultPetImg(species, f.breed === "Others" ? "Others" : breed);
+  }
+  const p = {id:name.toLowerCase().replace(/\W/g, "") + S.pets.length, name, species, breed, size:f.size, age:($("#pfAge") || {}).value || "", temper:f.temper, img, photo, passport:null};
   S.pets.push(p); S.active = p.id; S.pf = null; S.petForm = false; toast(`${name} added`); render(true); };
 A.vaxDone = () => { S.draft.vaxDone = true; render(true); };
 A.vaxFile = () => {};
@@ -1680,9 +1729,8 @@ A.tab = v => { S.acctTab = v; render(true); };
 A.signOut = () => { A.reset(); };
 A.activate = id => { S.active = id; render(true); };
 A.petForm = () => { S.petForm = true; render(true); };
-A.ppImg = v => { const [id, img] = v.split(":"); S.pets.find(x => x.id === id).img = img; render(true); };
 A.savePassport = id => { const p = S.pets.find(x => x.id === id), g = k => $("#" + k).value.trim();
-  p.breed = g("ppBreed") || p.breed; p.weight = g("ppWeight");
+  p.weight = g("ppWeight");
   const rab = $("#ppRabies").value; const vax = [];
   if (rab){ const d = new Date(rab), due = new Date(d); due.setFullYear(d.getFullYear() + 1); const f = x => x.toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"}); const days = (due - new Date()) / 864e5; vax.push({name:"Rabies", date:f(d), due:f(due), st:days < 0 ? "bad" : days < 60 ? "warn" : "ok"}); }
   p.passport = {chip:g("ppChip"), allergies:g("ppAllergy") ? g("ppAllergy").split(/,\s*/) : [], diet:g("ppDiet"), emergency:g("ppEm"), vaccines:vax, visits:[]};
@@ -1934,6 +1982,7 @@ document.addEventListener("click", e => {
   fn(t.dataset.v, t, e);
 });
 document.addEventListener("change", e => {
+  if (e.target && (e.target.id === "pfUpload" || e.target.id === "pfCamera")){ const file = e.target.files && e.target.files[0]; e.target.value = ""; readPetPhoto(file); return; }
   const t = e.target.closest("[data-in]"); if (!t) return;
   const [g, k] = t.dataset.in.split("."); S.sel[g][k] = t.value; render(true);
 });
