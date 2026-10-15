@@ -677,6 +677,17 @@ table.req th{width:40%;font-weight:600}
 }
 .pf-preview{width:96px;height:96px;border-radius:18px;object-fit:cover;margin-top:10px;background:var(--sand)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Hindi. English layout is unchanged. These rules apply only when lang=hi. */
+.langbtn{display:inline-flex;align-items:center;justify-content:center;height:42px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-weight:700;font-size:.9rem;font-family:"Nirmala UI","Noto Sans Devanagari",var(--body)}
+.langbtn:hover{border-color:var(--teal)}
+html[lang="hi"]{
+  --body:"Noto Sans Devanagari","Figtree","Segoe UI",system-ui,-apple-system,sans-serif;
+  --display:"Noto Sans Devanagari","Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+}
+html[lang="hi"] body{line-height:1.65}
+html[lang="hi"] .fs-tag text{font-size:1.65px;letter-spacing:0}
+html[lang="hi"] .cat-name{line-height:1.25}
 </style>
 </head>
 <body>
@@ -808,6 +819,1193 @@ const S = {
 };
 const pet = () => S.pets.find(p => p.id === S.active) || null;
 const petName = () => pet() ? pet().name : "your pet";
+
+/* LANGUAGE FEATURE
+   Rollback: set LANG_FEATURE to false.
+   That hides the language switch, ignores any saved choice, and leaves every screen in English.
+   English text stays in the page templates. Hindi is applied only when drawing the screen. */
+const LANG_FEATURE = true;
+const LANG_KEY = "koby-lang";
+const HI = {
+  "Home":"होम",
+  "your pet":"आपका पालतू",
+  "What does your pet need today?":"आपके पालतू को आज क्या चाहिए?",
+  "Triage, surgery and ICU around the clock at the Koby 24/7 Emergency Hospital.":"कोबी 24/7 इमरजेंसी अस्पताल में चौबीसों घंटे ट्राइएज, सर्जरी और आईसीयू।",
+  "Book a Service":"सेवा बुक करें",
+  "Pet walking":"पेट वॉकिंग",
+  "Day boarding":"डे बोर्डिंग",
+  "Vet teleconsult":"वीडियो पर पशु चिकित्सक",
+  "Shop":"शॉप",
+  "Pet Care Centres":"पेट केयर सेंटर्स",
+  "My Pets":"मेरे पालतू",
+  "My Bookings":"मेरी बुकिंग",
+  "ER":"ईआर",
+  "Active pet":"सक्रिय पालतू",
+  "Cart":"कार्ट",
+  "Account":"खाता",
+  "Menu":"मेनू",
+  "Main":"मुख्य",
+  "Koby home":"कोबी होम",
+  "Services":"सेवाएँ",
+  "Shop and visit":"शॉप और विज़िट",
+  "You":"आप",
+  "Reset demo":"डेमो रीसेट करें",
+  "Koby New Delhi. Pay per use, no membership needed. Koby Club is optional. This is a clickable prototype: prices, places and people are samples.":"कोबी नई दिल्ली। हर सेवा का अलग भुगतान, सदस्यता ज़रूरी नहीं। कोबी क्लब वैकल्पिक है। यह एक क्लिक करने योग्य प्रोटोटाइप है: कीमतें, जगहें और लोग नमूने हैं।",
+  "Food, toys and supplies":"खाना, खिलौने और सामान",
+  "Find a Pet Care Centre Near Me":"मेरे पास पेट केयर सेंटर खोजें",
+  "Grooming and spa":"ग्रूमिंग और स्पा",
+  "Become a Koby franchisee":"कोबी फ्रेंचाइज़ी बनें",
+  "Help and FAQ":"मदद और प्रश्न",
+  "Koby 24/7 Emergency Hospital":"कोबी 24/7 इमरजेंसी अस्पताल",
+  "Ask Koby AI":"कोबी एआई से पूछें",
+  "Open Koby AI":"कोबी एआई खोलें",
+  "Koby AI":"कोबी एआई",
+  "Koby categories":"कोबी श्रेणियाँ",
+  "World's Only 360 Degrees End to End Exchange for Pets":"पालतू जानवरों का दुनिया का इकलौता 360 डिग्री एंड टू एंड एक्सचेंज",
+  "WORLD'S ONLY 360° END TO END":"दुनिया का अकेला 360°",
+  "EXCHANGE FOR PETS":"पालतू एक्सचेंज",
+  "Choose a category":"श्रेणी चुनें",
+  "Every little thing they need.":"जो कुछ भी उन्हें चाहिए।",
+  "One happy place.":"एक खुश जगह।",
+  "From everyday essentials to expert care and pet-friendly adventures, discover all the ways Koby helps your pet live their happiest life.":"रोज़मर्रा की ज़रूरतों से लेकर विशेषज्ञ देखभाल और पालतू-अनुकूल सैर तक, जानें कोबी आपके पालतू की ज़िंदगी कैसे आसान बनाता है।",
+  "Tap to follow the route":"रास्ता देखने के लिए टैप करें",
+  "Arjun, dog walker":"अर्जुन, डॉग वॉकर",
+  "It takes ten minutes at any Pet Care Centre.":"किसी भी पेट केयर सेंटर पर दस मिनट लगते हैं।",
+  "Book at a Centre":"सेंटर पर बुक करें",
+  "Live GPS route, photos and a report after every walk.":"हर वॉक का लाइव जीपीएस रास्ता, फ़ोटो और रिपोर्ट।",
+  "A day of play and rest at a Pet Care Centre, with photo updates.":"पेट केयर सेंटर पर खेल और आराम का एक दिन, फ़ोटो अपडेट के साथ।",
+  "Talk to a vet":"पशु चिकित्सक से बात करें",
+  "Video call with a Koby vet, day or night.":"दिन हो या रात, कोबी पशु चिकित्सक से वीडियो कॉल।",
+  "Clinic, café, ice cream, day stay and shop near you.":"आपके पास क्लिनिक, कैफ़े, आइसक्रीम, डे स्टे और शॉप।",
+  "4 in South Delhi":"साउथ दिल्ली में 4",
+  "Bath, trim and nails at the Koby 24/7 Emergency Hospital.":"कोबी 24/7 इमरजेंसी अस्पताल में नहलाया, काटा और नाखून।",
+  "Food and supplies":"खाना और सामान",
+  "Delivered in about 2 hours, or collect at a Pet Care Centre.":"लगभग 2 घंटे में डिलीवरी, या पेट केयर सेंटर से ले जाएँ।",
+  "Pay per order":"हर ऑर्डर का भुगतान",
+  "If it's an emergency, come straight to the Koby ER.":"अगर इमरजेंसी है, सीधे कोबी ईआर आएँ।",
+  "With a Pet Passport, ER vets see your pet's history the moment you arrive.":"पेट पासपोर्ट हो तो पहुँचते ही ईआर के डॉक्टर आपके पालतू का इतिहास देख लेते हैं।",
+  "Call the ER":"ईआर को कॉल करें",
+  "About the hospital":"अस्पताल के बारे में",
+  "The Koby 24/7 Emergency Hospital at dusk":"शाम के समय कोबी 24/7 इमरजेंसी अस्पताल",
+  "Pet Care Centres near you":"आपके पास पेट केयर सेंटर्स",
+  "See all on the map":"नक्शे पर सब देखें",
+  "A Koby Pet Care Centre on a high street":"मुख्य बाज़ार में एक कोबी पेट केयर सेंटर",
+  "Become a Koby franchisee in your city":"अपने शहर में कोबी फ्रेंचाइज़ी बनें",
+  "Run a neighbourhood Pet Care Centre with a clinic, café, day stay and shop. Koby provides the design, training, supplies and the app.":"क्लिनिक, कैफ़े, डे स्टे और शॉप वाला मोहल्ले का पेट केयर सेंटर चलाएँ। डिज़ाइन, ट्रेनिंग, सामान और ऐप कोबी देता है।",
+  "See what it takes":"क्या चाहिए, देखें",
+  "A Pet Passport is optional, and useful.":"पेट पासपोर्ट ज़रूरी नहीं, पर काम का है।",
+  "Keep vaccines, allergies, diet and vet visits in one record. Bookings fill themselves in, reminders arrive on time, and Koby vets see the history before they meet your pet. You can book every service without one.":"टीके, एलर्जी, खान-पान और डॉक्टर की विज़िट एक जगह रखें। बुकिंग अपने आप भर जाती है, याद दिलाना समय पर आता है, और कोबी के डॉक्टर मिलने से पहले इतिहास देख लेते हैं। बिना इसके भी हर सेवा बुक कर सकते हैं।",
+  "Create a Pet Health Profile":"पेट हेल्थ प्रोफ़ाइल बनाएँ",
+  "Add your pet":"अपना पालतू जोड़ें",
+  "Explore Centre":"सेंटर देखें",
+  "Directions":"दिशा",
+  "Clinic":"क्लिनिक",
+  "Café and ice cream":"कैफ़े और आइसक्रीम",
+  "Day stay":"डे स्टे",
+  "Play area":"खेल का क्षेत्र",
+  "Shop & Essentials":"शॉप और ज़रूरी सामान",
+  "Everyday products for pets, delivered in 2 hours.":"पालतू जानवरों का रोज़मर्रा का सामान, 2 घंटे में डिलीवरी।",
+  "Grooming & Lifestyle":"ग्रूमिंग और लाइफ़स्टाइल",
+  "Services for comfort and happiness.":"आराम और खुशी की सेवाएँ।",
+  "Care & Companionship":"देखभाल और साथ",
+  "Trusted people and places for your pet.":"आपके पालतू के लिए भरोसेमंद लोग और जगहें।",
+  "Health & Veterinary Care":"स्वास्थ्य और पशु चिकित्सा",
+  "Routine, remote and emergency healthcare.":"नियमित, दूर से और इमरजेंसी इलाज।",
+  "Smart Pet Care":"स्मार्ट पेट केयर",
+  "Digital tools for safety and health records.":"सुरक्षा और स्वास्थ्य रिकॉर्ड के डिजिटल साधन।",
+  "Experiences & Travel":"तजुर्बे और यात्रा",
+  "Outings and holidays with your pet.":"पालतू के साथ घूमना और छुट्टियाँ।",
+  "Food":"खाना",
+  "Dry, wet and fresh meals":"सूखा, गीला और ताज़ा भोजन",
+  "Treats":"ट्रीट्स",
+  "Biscuits, chews and jerky":"बिस्कुट, च्यू और जर्की",
+  "Toys":"खिलौने",
+  "Chew, chase and tug":"चबाने, दौड़ाने और खींचने वाले",
+  "Accessories":"एक्सेसरीज़",
+  "Leashes, beds and bowls":"पट्टे, बिस्तर और कटोरियाँ",
+  "Hygiene and home care":"सफ़ाई और घर की देखभाल",
+  "Shampoo, wipes and cleaners":"शैम्पू, वाइप्स और क्लीनर",
+  "Fashion and clothes":"फ़ैशन और कपड़े",
+  "Day wear and designer":"रोज़ के और डिज़ाइनर कपड़े",
+  "Prams":"प्रैम",
+  "For walks and travel":"सैर और यात्रा के लिए",
+  "Live GPS tracker":"लाइव जीपीएस ट्रैकर",
+  "Collar with live tracking":"लाइव ट्रैकिंग वाला कॉलर",
+  "Koby Passport":"कोबी पासपोर्ट",
+  "Collar with a health record":"स्वास्थ्य रिकॉर्ड वाला कॉलर",
+  "Koby Telemedicine":"कोबी टेलीमेडिसिन",
+  "Video call with a Koby vet":"कोबी पशु चिकित्सक से वीडियो कॉल",
+  "Koby Care Clinics":"कोबी केयर क्लिनिक",
+  "Check-ups and vaccines":"जाँच और टीके",
+  "Koby ER":"कोबी ईआर",
+  "Emergency care, 24 by 7":"इमरजेंसी देखभाल, 24 घंटे",
+  "Koby Pharma":"कोबी फ़ार्मा",
+  "Medicines for pets":"पालतू जानवरों की दवाएँ",
+  "Bath, trim and blow-dry":"नहलाना, काटना और ड्राय",
+  "Book a walker":"वॉकर बुक करें",
+  "Pet trainer":"पेट ट्रेनर",
+  "Book a trainer":"ट्रेनर बुक करें",
+  "Koby Club":"कोबी क्लब",
+  "Optional spa, grooming and play":"वैकल्पिक स्पा, ग्रूमिंग और खेल",
+  "Vacation home and boarding":"वेकेशन होम और बोर्डिंग",
+  "Day stays and suites":"डे स्टे और सुइट",
+  "Pet-friendly hotels":"पालतू-अनुकूल होटल",
+  "Stays that welcome pets":"जहाँ पालतू का स्वागत हो",
+  "Restaurants and ice cream":"रेस्तराँ और आइसक्रीम",
+  "Café and pet-safe scoops":"कैफ़े और पालतू के लिए सुरक्षित स्कूप",
+  "Pet insurance":"पेट इंश्योरेंस",
+  "Cover for illness and accidents":"बीमारी और दुर्घटना का कवर",
+  "Prams for your pet":"आपके पालतू के लिए प्रैम",
+  "Strollers for walks and travel":"सैर और यात्रा के स्ट्रोलर",
+  "Collar with a live tracking subscription":"लाइव ट्रैकिंग सब्सक्रिप्शन वाला कॉलर",
+  "Collar with your pet's electronic health record":"आपके पालतू के इलेक्ट्रॉनिक स्वास्थ्य रिकॉर्ड वाला कॉलर",
+  "Bath, trim, nails and blow-dry":"नहलाना, काटना, नाखून और ड्राय",
+  "Buy pet insurance":"पेट इंश्योरेंस लें",
+  "Vacation home and day boarding":"वेकेशन होम और डे बोर्डिंग",
+  "Day stays and overnight suites":"डे स्टे और रात के सुइट",
+  "Pet restaurants and ice cream":"पेट रेस्तराँ और आइसक्रीम",
+  "Café, treats and pet-safe scoops":"कैफ़े, ट्रीट्स और पालतू के लिए सुरक्षित स्कूप",
+  "Book a walker, follow live":"वॉकर बुक करें, लाइव देखें",
+  "Live video call with a Koby vet":"कोबी पशु चिकित्सक से लाइव वीडियो कॉल",
+  "Check-ups, vaccines and treatment":"जाँच, टीके और इलाज",
+  "Book a pet-friendly hotel":"पालतू-अनुकूल होटल बुक करें",
+  "Stays that welcome your pet":"जहाँ आपके पालतू का स्वागत हो",
+  "Optional membership: spa, grooming, play area, Koby Passport and GPS tracker":"वैकल्पिक सदस्यता: स्पा, ग्रूमिंग, खेल क्षेत्र, कोबी पासपोर्ट और जीपीएस ट्रैकर",
+  "Everyday dry dog food, 3 kg":"रोज़ का सूखा डॉग फ़ूड, 3 किलो",
+  "Chicken and rice for adult dogs of every size. Resealable bag.":"हर साइज़ के वयस्क कुत्तों के लिए चिकन और चावल। दोबारा बंद होने वाला बैग।",
+  "Cat wet food, 6 tins":"बिल्लियों का गीला खाना, 6 टिन",
+  "Tuna and pumpkin in gravy. Complete food for adult cats.":"ग्रेवी में टूना और कद्दू। वयस्क बिल्लियों का पूरा भोजन।",
+  "Play bundle: rope, ball, mouse, star":"खेल बंडल: रस्सी, गेंद, चूहा, तारा",
+  "Four toys for chewing, chasing and tugging.":"चबाने, दौड़ाने और खींचने के चार खिलौने।",
+  "Round plush bed, medium":"गोल मुलायम बिस्तर, मीडियम",
+  "Raised rim for pets who like to curl up. Machine washable cover.":"गोल होकर सोने वालों के लिए उठा हुआ किनारा। कवर मशीन में धुल जाता है।",
+  "Teal leash and collar set":"टील पट्टा और कॉलर सेट",
+  "Padded handle, reflective stitching, 1.5 m leash.":"नरम हैंडल, चमकती सिलाई, 1.5 मीटर पट्टा।",
+  "Ceramic bowl pair":"सिरेमिक कटोरियों की जोड़ी",
+  "Heavy, tip-resistant bowls. Dishwasher safe.":"भारी, गिरने से बचने वाली कटोरियाँ। डिशवॉशर में सुरक्षित।",
+  "Home grooming kit":"घर पर ग्रूमिंग किट",
+  "Slicker brush, comb, nail clipper and gentle shampoo.":"स्लिकर ब्रश, कंघी, नेल कटर और हल्का शैम्पू।",
+  "Lamb and rice dog food, 3 kg":"लैम्ब और राइस डॉग फ़ूड, 3 किलो",
+  "Single protein, chicken free. Suits dogs with sensitive skin.":"एक प्रोटीन, चिकन नहीं। संवेदनशील त्वचा वाले कुत्तों के लिए।",
+  "Dog":"कुत्ता",
+  "Cat":"बिल्ली",
+  "Birds":"पक्षी",
+  "Rabbit":"खरगोश",
+  "Fish":"मछली",
+  "Pet parent":"पालतू माता-पिता",
+  "Chicken":"चिकन",
+  "Golden Retriever":"गोल्डन रिट्रीवर",
+  "Shih Tzu":"शी त्ज़ु",
+  "Labrador":"लैब्राडोर",
+  "German Shepherd":"जर्मन शेफर्ड",
+  "Beagle":"बीगल",
+  "Indie":"इंडी",
+  "Cocker Spaniel":"कॉकर स्पैनियल",
+  "Pug":"पग",
+  "Others":"अन्य",
+  "Persian":"पर्शियन",
+  "Siamese":"स्यामीज़",
+  "Bengal":"बंगाल",
+  "Calm with reactive and large dogs":"उत्तेजित और बड़े कुत्तों के साथ शांत",
+  "Great with puppies and seniors":"पिल्लों और बुज़ुर्ग पालतू जानवरों के साथ अच्छे",
+  "General practice, 9 years":"जनरल प्रैक्टिस, 9 साल",
+  "Emergency and critical care, 14 years":"इमरजेंसी और क्रिटिकल केयर, 14 साल",
+  "Koby Hauz Khas":"कोबी हौज़ खास",
+  "Koby Green Park":"कोबी ग्रीन पार्क",
+  "Koby Malviya Nagar":"कोबी मालवीय नगर",
+  "Koby Vasant Vihar":"कोबी वसंत विहार",
+  "Aurobindo Marg, Hauz Khas":"अरविंद मार्ग, हौज़ खास",
+  "Green Park Main Market":"ग्रीन पार्क मुख्य बाज़ार",
+  "Shivalik Road, Malviya Nagar":"शिवालिक रोड, मालवीय नगर",
+  "Basant Lok, Vasant Vihar":"बसंत लोक, वसंत विहार",
+  "Hauz Khas":"हौज़ खास",
+  "Green Park":"ग्रीन पार्क",
+  "Malviya Nagar":"मालवीय नगर",
+  "Vasant Vihar":"वसंत विहार",
+  "1.2 km":"1.2 किमी",
+  "2.1 km":"2.1 किमी",
+  "3.0 km":"3.0 किमी",
+  "5.4 km":"5.4 किमी",
+  "8 am to 10 pm":"सुबह 8 बजे से रात 10 बजे",
+  "9 am to 9 pm":"सुबह 9 बजे से रात 9 बजे",
+  "Today":"आज",
+  "Tomorrow":"कल",
+  "Mon":"सोम",
+  "Tue":"मंगल",
+  "Wed":"बुध",
+  "Thu":"गुरु",
+  "Fri":"शुक्र",
+  "Sat":"शनि",
+  "Sun":"रवि",
+  "Jan":"जन",
+  "Feb":"फ़र",
+  "Mar":"मार्च",
+  "Apr":"अप्रै",
+  "May":"मई",
+  "Jun":"जून",
+  "Jul":"जुल",
+  "Aug":"अग",
+  "Sep":"सितं",
+  "Oct":"अक्टू",
+  "Nov":"नव",
+  "Dec":"दिसं",
+  "7:00 am":"सुबह 7:00",
+  "8:30 am":"सुबह 8:30",
+  "5:00 pm":"शाम 5:00",
+  "6:30 pm":"शाम 6:30",
+  "8 am":"सुबह 8",
+  "9 am":"सुबह 9",
+  "10 am":"सुबह 10",
+  "6 pm":"शाम 6",
+  "7 pm":"शाम 7",
+  "8 pm":"रात 8",
+  "9:30 am":"सुबह 9:30",
+  "11:00 am":"सुबह 11:00",
+  "4:00 pm":"शाम 4:00",
+  "10:00 am":"सुबह 10:00",
+  "12:00 pm":"दोपहर 12:00",
+  "5:00 pm":"शाम 5:00",
+  "7:00 pm":"शाम 7:00",
+  "10:30 am":"सुबह 10:30",
+  "3:00 pm":"दोपहर 3:00",
+  "6:00 pm":"शाम 6:00",
+  "1:00 pm":"दोपहर 1:00",
+  "Check in 12:00 pm":"चेक-इन दोपहर 12:00",
+  "Check in 4:00 pm":"चेक-इन शाम 4:00",
+  "Check in 7:00 pm":"चेक-इन रात 7:00",
+  "Today 5:00 pm":"आज शाम 5:00",
+  "Today 6:30 pm":"आज शाम 6:30",
+  "Tomorrow 7:00 am":"कल सुबह 7:00",
+  "Date":"तारीख",
+  "Pet walking with live tracking":"लाइव ट्रैकिंग के साथ पेट वॉकिंग",
+  "A vetted Koby walker collects your dog from home. Follow the route live, and get a report with photos when the walk ends.":"एक जाँचा हुआ कोबी वॉकर आपके कुत्ते को घर से ले जाता है। रास्ता लाइव देखें, और वॉक खत्म होने पर फ़ोटो के साथ रिपोर्ट पाएँ।",
+  "A Koby walker with two dogs on a leafy street":"पत्तेदार सड़क पर दो कुत्तों के साथ कोबी वॉकर",
+  "Every walk includes":"हर वॉक में शामिल है",
+  "A live GPS route you can follow in the app":"ऐप में लाइव जीपीएस रास्ता",
+  "Photos during the walk":"वॉक के दौरान फ़ोटो",
+  "Pee, poo and water breaks logged":"पेशाब, मल और पानी के ब्रेक दर्ज",
+  "A report card and rating at the end":"अंत में रिपोर्ट और रेटिंग",
+  "Choose a walker":"वॉकर चुनें",
+  "A photo from a Koby walk":"कोबी वॉक की एक फ़ोटो",
+  "Book a walk":"वॉक बुक करें",
+  "How long?":"कितनी देर?",
+  "Which day?":"कौन सा दिन?",
+  "Pickup time":"पिकअप का समय",
+  "Notes for the walker":"वॉकर के लिए नोट",
+  "Anything the walker should know?":"वॉकर को क्या पता होना चाहिए?",
+  "Total, taxes included":"कुल, टैक्स सहित",
+  "Continue to checkout":"चेकआउट पर जाएँ",
+  "Pick a time to continue":"जारी रखने के लिए समय चुनें",
+  "Free cancellation up to 2 hours before.":"2 घंटे पहले तक मुफ़्त रद्दीकरण।",
+  "Dogs playing in a bright day-stay room with a caregiver":"देखभाल करने वाले के साथ उजले डे-स्टे कमरे में खेलते कुत्ते",
+  "Drop off in the morning and collect in the evening. Your pet plays, eats and naps with supervision, and you get updates through the day.":"सुबह छोड़ें और शाम को ले जाएँ। आपके पालतू की निगरानी में खेल, खाना और नींद होती है, और दिन भर अपडेट मिलते हैं।",
+  "Supervised play in small groups":"छोटे समूह में निगरानी के साथ खेल",
+  "Meals at your usual times":"आपके सामान्य समय पर खाना",
+  "Photo updates during the day":"दिन में फ़ोटो अपडेट",
+  "Quiet rest area for naps":"झपकी के लिए शांत जगह",
+  "Before the first stay":"पहले ठहराव से पहले",
+  "Two dogs in the play area":"खेल क्षेत्र में दो कुत्ते",
+  "Kavya, a caregiver":"काव्या, देखभाल करने वाली",
+  "Book day boarding":"डे बोर्डिंग बुक करें",
+  "Book a day stay":"डे स्टे बुक करें",
+  "Where":"कहाँ",
+  "Drop-off":"छोड़ने का समय",
+  "Pickup":"ले जाने का समय",
+  "This could be an emergency.":"यह इमरजेंसी हो सकती है।",
+  "Don't wait for a video call. Call the Koby ER now and head to the Koby 24/7 Emergency Hospital.":"वीडियो कॉल का इंतज़ार न करें। अभी कोबी ईआर को कॉल करें और कोबी 24/7 इमरजेंसी अस्पताल जाएँ।",
+  "Video consult now":"अभी वीडियो परामर्श",
+  "Next vet free in about 6 minutes. ₹399 per call, credited if you're seen at a Pet Care Centre or the ER within 48 hours.":"अगला डॉक्टर लगभग 6 मिनट में खाली। ₹399 प्रति कॉल, 48 घंटे में पेट केयर सेंटर या ईआर पर दिखाने पर यह राशि जुड़ जाती है।",
+  "Start a video consult":"वीडियो परामर्श शुरू करें",
+  "Clinic visit today":"आज क्लिनिक विज़िट",
+  "Koby Hauz Khas has slots this afternoon. Check-up ₹499.":"कोबी हौज़ खास में आज दोपहर स्लॉट हैं। जाँच ₹499।",
+  "Book a clinic slot":"क्लिनिक स्लॉट बुक करें",
+  "Talk to a Koby vet, any time":"कभी भी कोबी पशु चिकित्सक से बात करें",
+  "A pet parent on a video call with a vet, her cat on her lap":"गोद में बिल्ली लिए पालतू माता-पिता, पशु चिकित्सक से वीडियो कॉल पर",
+  "Go straight to the ER, not a video call, if your pet":"सीधे ईआर जाएँ, वीडियो कॉल पर नहीं, अगर आपका पालतू",
+  "is struggling to breathe, has collapsed or is having a seizure, is bleeding heavily, has eaten something poisonous, or has been hit by a vehicle.":"साँस लेने में तकलीफ़ हो, गिर पड़ा हो या दौरा पड़ रहा हो, बहुत खून बह रहा हो, ज़हरीली चीज़ खा ली हो, या गाड़ी से टकराया हो।",
+  "Koby vets":"कोबी के पशु चिकित्सक",
+  "Start a consult":"परामर्श शुरू करें",
+  "What's going on?":"क्या हो रहा है?",
+  "Tell us in a sentence or two. A photo helps too.":"एक-दो वाक्यों में बताएँ। फ़ोटो भी मदद करती है।",
+  "For example: vomited twice since this morning, still drinking water":"उदाहरण: सुबह से दो बार उल्टी, पानी अभी भी पी रहा है",
+  "See what to do":"क्या करें, देखें",
+  "Find a Pet Care Centre in New Delhi":"नई दिल्ली में पेट केयर सेंटर खोजें",
+  "Compact neighbourhood stores with a clinic for check-ups and vaccines, a café and ice cream bar, day stay, a play area and a shop. Complex cases go to the Koby 24/7 Emergency Hospital.":"जाँच और टीकों का क्लिनिक, कैफ़े और आइसक्रीम बार, डे स्टे, खेल क्षेत्र और शॉप वाले मोहल्ले के कॉम्पैक्ट स्टोर। जटिल मामले कोबी 24/7 इमरजेंसी अस्पताल जाते हैं।",
+  "Map of Koby Pet Care Centres and the Koby 24/7 Emergency Hospital":"कोबी पेट केयर सेंटर्स और कोबी 24/7 इमरजेंसी अस्पताल का नक्शा",
+  "Route from you to the Koby ER":"आपसे कोबी ईआर तक का रास्ता",
+  "Live walk route":"लाइव वॉक का रास्ता",
+  "At this centre":"इस सेंटर पर",
+  "Check-ups, vaccines and minor treatment. Complex cases are referred to the Koby 24/7 Emergency Hospital.":"जाँच, टीके और छोटा इलाज। जटिल मामले कोबी 24/7 इमरजेंसी अस्पताल भेजे जाते हैं।",
+  "Day stay and play area":"डे स्टे और खेल क्षेत्र",
+  "Drop in for the day, or just for an hour of play.":"पूरे दिन के लिए आएँ, या सिर्फ़ एक घंटे खेलने के लिए।",
+  "Café":"कैफ़े",
+  "Coffee and snacks for you, a water bowl and treats for them.":"आपके लिए कॉफ़ी और नाश्ता, उनके लिए पानी और ट्रीट्स।",
+  "Walk in":"बिना अपॉइंटमेंट आएँ",
+  "Ice cream bar":"आइसक्रीम बार",
+  "Pet-safe scoops in mango, peanut butter and blueberry.":"आम, पीनट बटर और ब्लूबेरी के पालतू-सुरक्षित स्कूप।",
+  "Book the clinic":"क्लिनिक बुक करें",
+  "Pick a service, then a time.":"सेवा चुनें, फिर समय।",
+  "Get directions":"दिशा लें",
+  "Clinic check-up":"क्लिनिक जाँच",
+  "Vaccination":"टीकाकरण",
+  "Minor treatment":"छोटा इलाज",
+  "Luxury boarding suite, 1 night":"लक्ज़री बोर्डिंग सुइट, 1 रात",
+  "At the Koby 24/7 Emergency Hospital.":"कोबी 24/7 इमरजेंसी अस्पताल में।",
+  "At any Pet Care Centre.":"किसी भी पेट केयर सेंटर पर।",
+  "Final price depends on what's needed; you'll see it before you pay anything extra.":"अंतिम कीमत ज़रूरत पर निर्भर है; अतिरिक्त भुगतान से पहले आप उसे देखेंगे।",
+  "Centre":"सेंटर",
+  "Time":"समय",
+  "From, taxes included":"से शुरू, टैक्स सहित",
+  "Emergency and critical care around the clock: triage, surgery and ICU. Also home to suites, a spa, a café and an ice cream bar.":"चौबीसों घंटे इमरजेंसी और क्रिटिकल केयर: ट्राइएज, सर्जरी और आईसीयू। साथ में सुइट, स्पा, कैफ़े और आइसक्रीम बार।",
+  "It's an emergency":"यह इमरजेंसी है",
+  "When you arrive at the ER":"ईआर पहुँचने पर",
+  "Triage at the door":"दरवाज़े पर ट्राइएज",
+  "A nurse checks breathing, bleeding and pain first.":"नर्स पहले साँस, खून और दर्द देखती है।",
+  "History on screen":"स्क्रीन पर इतिहास",
+  "With a Pet Health Profile, the ER vet sees vaccines, allergies and past visits.":"पेट हेल्थ प्रोफ़ाइल हो तो ईआर डॉक्टर टीके, एलर्जी और पुरानी विज़िट देखता है।",
+  "Treatment":"इलाज",
+  "Surgery, imaging or ICU, with the cost explained before anything planned.":"सर्जरी, इमेजिंग या आईसीयू, और कुछ प्लान होने से पहले खर्च बताया जाता है।",
+  "Updates to your phone":"फ़ोन पर अपडेट",
+  "Notes and next steps go to the app and the Pet Health Profile.":"नोट और अगले कदम ऐप और पेट हेल्थ प्रोफ़ाइल में जाते हैं।",
+  "Vets examining a dog in the ER treatment room":"ईआर ट्रीटमेंट रूम में कुत्ते की जाँच करते डॉक्टर",
+  "Also at the hospital":"अस्पताल में और भी",
+  "Luxury boarding suites":"लक्ज़री बोर्डिंग सुइट",
+  "Private rooms with a proper bed, for nights away.":"रात के लिए असली बिस्तर वाले निजी कमरे।",
+  "Pet restaurant and café":"पेट रेस्तराँ और कैफ़े",
+  "Sit down with your pet. Bowls and treats on the house.":"पालतू के साथ बैठें। कटोरी और ट्रीट्स मुफ़्त।",
+  "Pet-safe scoops and human ones too.":"पालतू के लिए सुरक्षित स्कूप, और लोगों के लिए भी।",
+  "Delivery":"डिलीवरी",
+  "2":"2",
+  "hours":"घंटे",
+  "Delivered to your door in 2 hours":"2 घंटे में आपके दरवाज़े तक",
+  "Order food, toys and supplies now and they reach you today, anywhere we deliver in South Delhi.":"खाना, खिलौने और सामान अभी ऑर्डर करें, साउथ दिल्ली में जहाँ हम डिलीवरी करते हैं वहाँ आज पहुँचेंगे।",
+  "Or collect at Koby Hauz Khas in 30 minutes, free":"या 30 मिनट में कोबी हौज़ खास से ले जाएँ, मुफ़्त",
+  "Track your rider live in the app":"ऐप में राइडर को लाइव ट्रैक करें",
+  "Go to cart":"कार्ट पर जाएँ",
+  "Who are you shopping for?":"आप किसके लिए खरीदारी कर रहे हैं?",
+  "Pick one and we'll show what fits.":"एक चुनें, हम बताएँगे क्या सही रहेगा।",
+  "This helps us suggest the right food, sizes and care.":"इससे हम सही खाना, साइज़ और देखभाल सुझा पाते हैं।",
+  "Change pet":"पालतू बदलें",
+  "Type the breed, for example Dachshund":"नस्ल लिखें, उदाहरण डैक्सहुंड",
+  "Breed":"नस्ल",
+  "Continue":"जारी रखें",
+  "Shop supplies, or book care. Pay per use.":"सामान खरीदें, या देखभाल बुक करें। हर बार का भुगतान।",
+  "Shopping for":"खरीदारी",
+  "Change":"बदलें",
+  "What are you looking for?":"आप क्या ढूँढ रहे हैं?",
+  "Everything":"सब कुछ",
+  "Nothing in this section yet.":"इस सेक्शन में अभी कुछ नहीं।",
+  "Try another section, or ask Koby AI for help.":"दूसरा सेक्शन आज़माएँ, या कोबी एआई से पूछें।",
+  "Add":"जोड़ें",
+  "Fewer":"कम",
+  "More":"ज़्यादा",
+  "Add to cart":"कार्ट में डालें",
+  "Buy now":"अभी खरीदें",
+  "Or collect at any Pet Care Centre, free":"या किसी भी पेट केयर सेंटर से ले जाएँ, मुफ़्त",
+  "Ask Koby about this":"इसके बारे में कोबी से पूछें",
+  "Your cart is empty":"आपका कार्ट खाली है",
+  "Food, toys, beds and grooming kits, delivered or ready to collect.":"खाना, खिलौने, बिस्तर और ग्रूमिंग किट, डिलीवरी या लेने के लिए तैयार।",
+  "Browse supplies":"सामान देखें",
+  "Your cart":"आपका कार्ट",
+  "each":"प्रति",
+  "How do you want it?":"आप इसे कैसे चाहते हैं?",
+  "Deliver to home":"घर पर डिलीवरी",
+  "Collect at Koby Hauz Khas":"कोबी हौज़ खास से ले जाएँ",
+  "Ready in 30 minutes. Free.":"30 मिनट में तैयार। मुफ़्त।",
+  "Items":"चीज़ें",
+  "Free":"मुफ़्त",
+  "Total":"कुल",
+  "Nothing to check out yet":"अभी चेकआउट के लिए कुछ नहीं",
+  "Pick a service or add something to your cart first.":"पहले कोई सेवा चुनें या कार्ट में कुछ डालें।",
+  "Go to home":"होम पर जाएँ",
+  "Sign in":"साइन इन",
+  "Pet basics":"पालतू की बुनियादी जानकारी",
+  "Vaccine card":"वैक्सीन कार्ड",
+  "Pay":"भुगतान",
+  "Done":"हो गया",
+  "Back":"वापस",
+  "Checkout":"चेकआउट",
+  "Sign in with your phone":"फ़ोन से साइन इन करें",
+  "We'll text you a code. No password needed.":"हम आपको एक कोड भेजेंगे। पासवर्ड नहीं चाहिए।",
+  "Mobile number":"मोबाइल नंबर",
+  "Send code":"कोड भेजें",
+  "Demo: 98765 43210 signs in Priya, who has a dog with a Pet Health Profile. Any other number is a new user.":"डेमो: 98765 43210 से प्रिया साइन इन होती हैं, जिनके कुत्ते की पेट हेल्थ प्रोफ़ाइल है। कोई और नंबर नया उपयोगकर्ता है।",
+  "Enter the code":"कोड डालें",
+  "Change number":"नंबर बदलें",
+  "4-digit code":"4 अंकों का कोड",
+  "Verify and continue":"जाँचें और आगे बढ़ें",
+  "Demo code: 1234":"डेमो कोड: 1234",
+  "Rabies vaccine":"रेबीज़ का टीका",
+  "Day boarding needs a rabies vaccine from the last 12 months. A clear photo of the vaccine card is enough.":"डे बोर्डिंग के लिए पिछले 12 महीनों का रेबीज़ टीका चाहिए। वैक्सीन कार्ड की साफ़ फ़ोटो काफ़ी है।",
+  "Photo of the vaccine card":"वैक्सीन कार्ड की फ़ोटो",
+  "I'll show it at drop-off":"मैं छोड़ते समय दिखा दूँगा",
+  "Pet Passport":"पेट पासपोर्ट",
+  "Notes for the team":"टीम के लिए नोट",
+  "Allergies, medicines, behaviour":"एलर्जी, दवाएँ, व्यवहार",
+  "Filled in from the Pet Health Profile.":"पेट हेल्थ प्रोफ़ाइल से भरा गया।",
+  "Optional.":"वैकल्पिक।",
+  "UPI":"यूपीआई",
+  "Pay from any UPI app":"किसी भी यूपीआई ऐप से भुगतान",
+  "Card":"कार्ड",
+  "Visa, Mastercard, RuPay":"वीज़ा, मास्टरकार्ड, रुपे",
+  "Wallet":"वॉलेट",
+  "Paytm, PhonePe, Amazon Pay":"पेटीएम, फ़ोनपे, अमेज़न पे",
+  "You pay for this booking only. No subscription.":"आप सिर्फ़ इस बुकिंग का भुगतान करते हैं। कोई सब्सक्रिप्शन नहीं।",
+  "Summary":"सारांश",
+  "Credited if your pet is seen at a Pet Care Centre or the ER within 48 hours.":"48 घंटे में पेट केयर सेंटर या ईआर पर दिखाने पर यह राशि जुड़ जाती है।",
+  "Pickup from home":"घर से पिकअप",
+  "Video call":"वीडियो कॉल",
+  "Now, about 6 minutes":"अभी, लगभग 6 मिनट",
+  "Video consult":"वीडियो परामर्श",
+  "Video consult with a Koby vet":"कोबी पशु चिकित्सक से वीडियो परामर्श",
+  "Day stay":"डे स्टे",
+  "Ready in 30 minutes":"30 मिनट में तैयार",
+  "In about 2 hours":"लगभग 2 घंटे में",
+  "A few details about your pet":"आपके पालतू के बारे में कुछ बातें",
+  "Add a pet":"पालतू जोड़ें",
+  "Only what this booking needs. You can add more later, or create a full Pet Health Profile.":"सिर्फ़ जो इस बुकिंग के लिए चाहिए। बाकी बाद में जोड़ सकते हैं, या पूरी पेट हेल्थ प्रोफ़ाइल बना सकते हैं।",
+  "A basic profile is enough to book anything.":"कुछ भी बुक करने के लिए बुनियादी प्रोफ़ाइल काफ़ी है।",
+  "Name":"नाम",
+  "Species":"प्रजाति",
+  "Size":"साइज़",
+  "Small":"छोटा",
+  "Medium":"मध्यम",
+  "Large":"बड़ा",
+  "On walks, they are":"सैर पर वे ऐसे हैं",
+  "Friendly":"दोस्ताना",
+  "Shy":"शर्मीला",
+  "Reactive to dogs":"कुत्तों पर प्रतिक्रिया करते हैं",
+  "Pulls hard":"ज़ोर से खींचते हैं",
+  "Age":"उम्र",
+  "Photo":"फ़ोटो",
+  "Upload photo":"फ़ोटो अपलोड करें",
+  "Take photo":"फ़ोटो लें",
+  "Chosen pet photo":"चुनी हुई पालतू फ़ोटो",
+  "Optional. Upload a picture, or take one with the camera.":"वैकल्पिक। चित्र अपलोड करें, या कैमरे से लें।",
+  "Save pet":"पालतू सहेजें",
+  "Breed name":"नस्ल का नाम",
+  "4 years":"4 साल",
+  "22 kg":"22 किलो",
+  "Order placed":"ऑर्डर हो गया",
+  "Booked":"बुक हो गया",
+  "Add to calendar":"कैलेंडर में जोड़ें",
+  "Bookings and orders":"बुकिंग और ऑर्डर",
+  "Track order":"ऑर्डर ट्रैक करें",
+  "Go to the video room":"वीडियो रूम में जाएँ",
+  "Open live updates":"लाइव अपडेट खोलें",
+  "Set up now":"अभी सेट करें",
+  "Later":"बाद में",
+  "No thanks":"नहीं, धन्यवाद",
+  "Bookings":"बुकिंग",
+  "Walk report":"वॉक रिपोर्ट",
+  "Distance":"दूरी",
+  "Breaks":"ब्रेक",
+  "Walk photo":"वॉक फ़ोटो",
+  "Picked up from home":"घर से लिया",
+  "Pee break":"पेशाब ब्रेक",
+  "Photo":"फ़ोटो",
+  "Water break":"पानी ब्रेक",
+  "Poo break, bagged":"मल ब्रेक, बैग में",
+  "Live walk":"लाइव वॉक",
+  "End walk now (demo)":"वॉक अभी खत्म करें (डेमो)",
+  "Start the walk now (demo)":"वॉक अभी शुरू करें (डेमो)",
+  "Call":"कॉल",
+  "Day boarding":"डे बोर्डिंग",
+  "Show next update (demo)":"अगला अपडेट दिखाएँ (डेमो)",
+  "Kavya, caregiver":"काव्या, देखभाल करने वाली",
+  "Ask the staff":"स्टाफ़ से पूछें",
+  "Checked in. Settled in quickly.":"चेक-इन हो गया। जल्दी सेट हो गया।",
+  "Group play in the yard.":"आँगन में समूह खेल।",
+  "Lunch eaten, all of it.":"दोपहर का खाना पूरा खा लिया।",
+  "Nap time in the rest area.":"आराम क्षेत्र में झपकी।",
+  "Ready for pickup.":"ले जाने के लिए तैयार।",
+  "Consult notes":"परामर्श के नोट",
+  "What we saw:":"हमने क्या देखा:",
+  "mild stomach upset, alert and drinking.":"हल्का पेट खराब, सतर्क और पानी पी रहा है।",
+  "Plan:":"योजना:",
+  "small bland meals for 48 hours, fresh water always available.":"48 घंटे तक हल्का भोजन, ताज़ा पानी हमेशा उपलब्ध।",
+  "Come in if:":"आएँ अगर:",
+  "Book a follow-up":"फ़ॉलो-अप बुक करें",
+  "Turn this into a Pet Health Profile":"इसे पेट हेल्थ प्रोफ़ाइल बनाएँ",
+  "In a call with":"कॉल पर",
+  "Mute":"म्यूट",
+  "Camera":"कैमरा",
+  "End call":"कॉल खत्म करें",
+  "Your camera":"आपका कैमरा",
+  "can see":"देख सकते हैं",
+  "Your description of the problem":"समस्या का आपका विवरण",
+  "Photos you upload in chat":"चैट में अपलोड की गई फ़ोटो",
+  "Open chat beside the call":"कॉल के साथ चैट खोलें",
+  "Video room":"वीडियो रूम",
+  "Join the video call":"वीडियो कॉल जॉइन करें",
+  "Orders":"ऑर्डर",
+  "Packed":"पैक हो गया",
+  "Out for delivery":"डिलीवरी के लिए निकला",
+  "Ready to collect":"लेने के लिए तैयार",
+  "Collected":"ले लिया",
+  "Delivered":"डिलीवर हो गया",
+  "Rider is 12 minutes away.":"राइडर 12 मिनट दूर है।",
+  "Move to next step (demo)":"अगले चरण पर जाएँ (डेमो)",
+  "Ask about this order":"इस ऑर्डर के बारे में पूछें",
+  "Placed":"दिया गया",
+  "On the way":"रास्ते में",
+  "Track":"ट्रैक",
+  "Live now":"अभी लाइव",
+  "Cancelled":"रद्द",
+  "Open":"खोलें",
+  "Cancel":"रद्द करें",
+  "Rate":"रेट करें",
+  "Book again":"फिर बुक करें",
+  "Video room":"वीडियो रूम",
+  "Your bookings and orders":"आपकी बुकिंग और ऑर्डर",
+  "Sign in when you book or check out, and everything you book shows up here.":"बुक या चेकआउट करते समय साइन इन करें, और जो कुछ भी बुक करेंगे वह यहाँ दिखेगा।",
+  "Find a service":"सेवा खोजें",
+  "Sign out":"साइन आउट",
+  "Your account":"आपका खाता",
+  "No orders yet.":"अभी कोई ऑर्डर नहीं।",
+  "Nothing here yet.":"अभी यहाँ कुछ नहीं।",
+  "Book a walk":"वॉक बुक करें",
+  "My pets":"मेरे पालतू",
+  "A basic profile is all you need to book. Add a Pet Health Profile for reminders and shared health records.":"बुक करने के लिए बुनियादी प्रोफ़ाइल काफ़ी है। याद दिलाने और साझा स्वास्थ्य रिकॉर्ड के लिए पेट हेल्थ प्रोफ़ाइल जोड़ें।",
+  "Basic profile":"बुनियादी प्रोफ़ाइल",
+  "Active":"सक्रिय",
+  "Open Pet Health Profile":"पेट हेल्थ प्रोफ़ाइल खोलें",
+  "Make active":"सक्रिय करें",
+  "Add a pet first":"पहले एक पालतू जोड़ें",
+  "A Pet Health Profile belongs to a pet. Add one, then create the Pet Health Profile.":"पेट हेल्थ प्रोफ़ाइल किसी पालतू की होती है। पहले पालतू जोड़ें, फिर प्रोफ़ाइल बनाएँ।",
+  "Everything is optional. Skip what you don't know and add it later.":"सब वैकल्पिक है। जो न पता हो छोड़ दें, बाद में जोड़ लें।",
+  "Weight":"वज़न",
+  "Rabies vaccine date":"रेबीज़ टीके की तारीख",
+  "Allergies":"एलर्जी",
+  "Diet":"खान-पान",
+  "Microchip number":"माइक्रोचिप नंबर",
+  "Emergency contact":"इमरजेंसी संपर्क",
+  "Save Pet Health Profile":"पेट हेल्थ प्रोफ़ाइल सहेजें",
+  "Not now":"अभी नहीं",
+  "Not added":"जोड़ा नहीं",
+  "Show at any clinic":"किसी भी क्लिनिक पर दिखाएँ",
+  "Pet Health Profile QR code":"पेट हेल्थ प्रोफ़ाइल क्यूआर कोड",
+  "Vaccines and care":"टीके और देखभाल",
+  "Vaccine":"टीका",
+  "Given":"लगा",
+  "Next due":"अगली तारीख",
+  "Status":"स्थिति",
+  "Up to date":"अप टू डेट",
+  "Due soon":"जल्द देय",
+  "Overdue":"अतिदेय",
+  "No vaccines added yet.":"अभी कोई टीका नहीं जोड़ा।",
+  "Allergies and diet":"एलर्जी और खान-पान",
+  "None recorded":"कुछ दर्ज नहीं",
+  "Diet not added":"खान-पान नहीं जोड़ा",
+  "Visits":"विज़िट",
+  "Visits at Koby clinics, the ER and video consults appear here.":"कोबी क्लिनिक, ईआर और वीडियो परामर्श की विज़िट यहाँ दिखती हैं।",
+  "Rabies":"रेबीज़",
+  "DHPPi":"डीएचपीपीआई",
+  "Deworming":"कृमिनाशक",
+  "not added":"जोड़ा नहीं",
+  "How does pay-per-use work?":"पे-पर-यूज़ कैसे काम करता है?",
+  "You pay for each walk, stay, consult or order when you book it. You don't need a membership. Koby Club and the GPS tracker subscription are optional.":"हर वॉक, ठहराव, परामर्श या ऑर्डर का भुगतान बुकिंग के समय होता है। सदस्यता ज़रूरी नहीं। कोबी क्लब और जीपीएस ट्रैकर सब्सक्रिप्शन वैकल्पिक हैं।",
+  "Can I cancel a booking?":"क्या मैं बुकिंग रद्द कर सकता हूँ?",
+  "Yes. Cancel free up to 2 hours before. After that, half the price is charged so we can pay the walker or carer.":"हाँ। 2 घंटे पहले तक मुफ़्त रद्द करें। उसके बाद आधी कीमत लगती है ताकि हम वॉकर या देखभाल करने वाले को भुगतान कर सकें।",
+  "Do I need a Pet Passport?":"क्या मुझे पेट पासपोर्ट चाहिए?",
+  "No. A name, species and size are enough to book anything. A Pet Health Profile adds reminders and lets Koby vets see your pet's history.":"नहीं। नाम, प्रजाति और साइज़ से कुछ भी बुक हो जाता है। पेट हेल्थ प्रोफ़ाइल याद दिलाती है और कोबी के डॉक्टर आपके पालतू का इतिहास देख पाते हैं।",
+  "What does a video consult cost?":"वीडियो परामर्श की कीमत क्या है?",
+  "What do I need for day boarding?":"डे बोर्डिंग के लिए क्या चाहिए?",
+  "A rabies vaccine from the last 12 months. Upload the vaccine card at checkout or show it at drop-off.":"पिछले 12 महीनों का रेबीज़ टीका। चेकआउट पर कार्ड अपलोड करें या छोड़ते समय दिखाएँ।",
+  "How do I become a Koby franchisee?":"मैं कोबी फ्रेंचाइज़ी कैसे बनूँ?",
+  "Fill in the form on the franchise page. The Koby Corporate Franchising Group replies within 3 working days.":"फ्रेंचाइज़ पेज पर फ़ॉर्म भरें। कोबी कॉर्पोरेट फ्रेंचाइज़िंग ग्रुप 3 कार्यदिवसों में जवाब देता है।",
+  "When are Pet Care Centres open?":"पेट केयर सेंटर्स कब खुले रहते हैं?",
+  "Most Pet Care Centres are open 8 am to 10 pm. The Koby 24/7 Emergency Hospital is open 24 hours a day.":"ज़्यादातर पेट केयर सेंटर्स सुबह 8 बजे से रात 10 बजे तक खुले रहते हैं। कोबी 24/7 इमरजेंसी अस्पताल 24 घंटे खुला रहता है।",
+  "Still stuck?":"अभी भी अटके हैं?",
+  "Chat with the Koby team. A person replies in a few minutes.":"कोबी टीम से चैट करें। कुछ मिनट में एक व्यक्ति जवाब देता है।",
+  "Chat with support":"सपोर्ट से चैट करें",
+  "Call the Koby ER now":"अभी कोबी ईआर को कॉल करें",
+  "Open 24 hours. Call while you travel so the team is ready when you arrive.":"24 घंटे खुला। रास्ते में कॉल करें ताकि पहुँचते ही टीम तैयार हो।",
+  "South Delhi. About 12 minutes by car from Hauz Khas.":"साउथ दिल्ली। हौज़ खास से कार से लगभग 12 मिनट।",
+  "Open directions":"दिशा खोलें",
+  "While you travel":"रास्ते में",
+  "Keep your pet still and warm, and support the head and back.":"पालतू को शांत और गर्म रखें, और सिर व पीठ को सहारा दें।",
+  "If something was swallowed, bring the packaging.":"अगर कुछ निगल लिया हो, पैकेजिंग साथ लाएँ।",
+  "Don't give human medicines.":"इंसानों की दवा न दें।",
+  "Franchise":"फ्रेंचाइज़",
+  "Open a neighbourhood Pet Care Centre with a clinic, café and ice cream bar, day stay, play area and shop. Koby gives you the brand, the design, trained vets and staff, supplies and the app your customers book on.":"क्लिनिक, कैफ़े और आइसक्रीम बार, डे स्टे, खेल क्षेत्र और शॉप वाला मोहल्ले का पेट केयर सेंटर खोलें। ब्रांड, डिज़ाइन, प्रशिक्षित डॉक्टर और स्टाफ़, सामान और ऐप कोबी देता है।",
+  "Talk to the franchise team":"फ्रेंचाइज़ टीम से बात करें",
+  "Outside a Koby Pet Care Centre":"कोबी पेट केयर सेंटर के बाहर",
+  "Inside a Koby Pet Care Centre":"कोबी पेट केयर सेंटर के अंदर",
+  "How a Koby centre is laid out":"कोबी सेंटर का लेआउट",
+  "A sample plan for about 1,000 sq ft. The franchise team adapts it to your space.":"लगभग 1,000 वर्ग फ़ुट की नमूना योजना। फ्रेंचाइज़ टीम इसे आपकी जगह के हिसाब से ढालती है।",
+  "Sample floor plan of a 1,000 sq ft Koby Pet Care Centre":"1,000 वर्ग फ़ुट कोबी पेट केयर सेंटर का नमूना फ़्लोर प्लान",
+  "What the space needs":"जगह में क्या चाहिए",
+  "Sample requirements for this prototype. The franchise team confirms them for each site.":"इस प्रोटोटाइप की नमूना ज़रूरतें। फ्रेंचाइज़ टीम हर साइट के लिए पुष्टि करती है।",
+  "What Koby provides":"कोबी क्या देता है",
+  "Store design and fit-out":"स्टोर डिज़ाइन और फ़िट-आउट",
+  "Layouts, signage and an approved list of contractors.":"लेआउट, साइनबोर्ड और मंज़ूर ठेकेदारों की सूची।",
+  "Vets and staff":"पशु चिकित्सक और स्टाफ़",
+  "Hiring support and training for vets, groomers and carers.":"डॉक्टर, ग्रूमर और देखभाल करने वालों की भर्ती और ट्रेनिंग।",
+  "Supplies":"सामान",
+  "Food, medicines and products from Koby's supply chain.":"कोबी की सप्लाई चेन से खाना, दवाएँ और उत्पाद।",
+  "Bookings and Koby AI":"बुकिंग और कोबी एआई",
+  "Your centre shows up in the app for walks, boarding, clinic and shop.":"आपका सेंटर वॉक, बोर्डिंग, क्लिनिक और शॉप के लिए ऐप में दिखता है।",
+  "ER back-up":"ईआर बैक-अप",
+  "Complex cases go to the Koby 24/7 Emergency Hospital.":"जटिल मामले कोबी 24/7 इमरजेंसी अस्पताल जाते हैं।",
+  "Marketing":"मार्केटिंग",
+  "Launch campaigns and local promotion with the Koby brand.":"कोबी ब्रांड के साथ लॉन्च कैंपेन और स्थानीय प्रचार।",
+  "From enquiry to opening day":"पूछताछ से खुलने के दिन तक",
+  "Enquire":"पूछताछ",
+  "Send the form below. The team calls you back.":"नीचे फ़ॉर्म भेजें। टीम वापस कॉल करती है।",
+  "Site visit":"साइट विज़िट",
+  "We check the location, space and catchment with you.":"हम आपके साथ जगह, स्थान और कैचमेंट देखते हैं।",
+  "Agreement and fit-out":"समझौता और फ़िट-आउट",
+  "Sign up, build the centre and train the team.":"साइन अप करें, सेंटर बनाएँ और टीम को ट्रेन करें।",
+  "Open":"खोलें",
+  "Launch in the app and welcome your first pets.":"ऐप में लॉन्च करें और पहले पालतू जानवरों का स्वागत करें।",
+  "Reach the Koby Corporate Franchising Group":"कोबी कॉर्पोरेट फ्रेंचाइज़िंग ग्रुप से जुड़ें",
+  "Share a few details and the team will call you back.":"कुछ जानकारी दें, टीम आपको कॉल करेगी।",
+  "Full name":"पूरा नाम",
+  "Email":"ईमेल",
+  "City":"शहर",
+  "Do you have a space?":"क्या आपके पास जगह है?",
+  "I own a space":"मेरे पास अपनी जगह है",
+  "I'm leasing a space":"मैं जगह लीज़ पर ले रहा हूँ",
+  "I'm still looking":"मैं अभी ढूँढ रहा हूँ",
+  "Area available":"उपलब्ध क्षेत्र",
+  "Investment you're planning":"आप कितना निवेश सोच रहे हैं",
+  "Under ₹50 lakh":"₹50 लाख से कम",
+  "₹50 lakh to ₹1 crore":"₹50 लाख से ₹1 करोड़",
+  "Above ₹1 crore":"₹1 करोड़ से अधिक",
+  "I'd like to discuss":"मैं चर्चा करना चाहूँगा",
+  "Anything else we should know?":"और कुछ जो हमें पता होना चाहिए?",
+  "Your background, the neighbourhood, timelines":"आपकी पृष्ठभूमि, मोहल्ला, समय",
+  "Send enquiry":"पूछताछ भेजें",
+  "We use these details only to discuss a Koby franchise with you.":"ये विवरण सिर्फ़ आपके साथ कोबी फ्रेंचाइज़ की बात के लिए हैं।",
+  "Email your details as well":"अपना विवरण ईमेल भी करें",
+  "Send another enquiry":"एक और पूछताछ भेजें",
+  "Carpet area":"कारपेट एरिया",
+  "800 to 1,200 sq ft":"800 से 1,200 वर्ग फ़ुट",
+  "Floor":"मंज़िल",
+  "Ground floor, facing the street":"ग्राउंड फ़्लोर, सड़क की ओर",
+  "Frontage":"सामने की चौड़ाई",
+  "At least 20 ft, with glass":"कम से कम 20 फ़ुट, शीशे के साथ",
+  "Ceiling height":"छत की ऊँचाई",
+  "10 ft or more":"10 फ़ुट या अधिक",
+  "Location":"स्थान",
+  "High street or market close to homes":"घरों के पास हाई स्ट्रीट या बाज़ार",
+  "Power":"बिजली",
+  "15 kW, three-phase":"15 किलोवॉट, थ्री-फ़ेज़",
+  "Water":"पानी",
+  "Supply and drainage for the clinic and grooming room":"क्लिनिक और ग्रूमिंग रूम के लिए सप्लाई और ड्रेनेज",
+  "Parking":"पार्किंग",
+  "Room for 3 to 4 cars, or a short-stop drop-off":"3 से 4 कारों की जगह, या थोड़ी देर रुकने का ड्रॉप-ऑफ़",
+  "Reception":"रिसेप्शन",
+  "Grooming":"ग्रूमिंग",
+  "Store room":"स्टोर रूम",
+  "Day stay and play":"डे स्टे और खेल",
+  "Entrance":"प्रवेश",
+  "About 40 ft × 25 ft":"लगभग 40 फ़ुट × 25 फ़ुट",
+  "250 sq ft":"250 वर्ग फ़ुट",
+  "60 sq ft":"60 वर्ग फ़ुट",
+  "200 sq ft":"200 वर्ग फ़ुट",
+  "140 sq ft":"140 वर्ग फ़ुट",
+  "90 sq ft":"90 वर्ग फ़ुट",
+  "70 sq ft, with WC":"70 वर्ग फ़ुट, शौचालय सहित",
+  "190 sq ft":"190 वर्ग फ़ुट",
+  "1,000 sq ft":"1,000 वर्ग फ़ुट",
+  "Gurugram":"गुरुग्राम",
+  "Ravi, Koby support":"रवि, कोबी सपोर्ट",
+  "A person is replying":"एक व्यक्ति जवाब दे रहा है",
+  "Close chat":"चैट बंद करें",
+  "ER 24/7":"ईआर 24/7",
+  "Possible emergency. Go to the Koby ER now.":"संभव इमरजेंसी। अभी कोबी ईआर जाएँ।",
+  "Call ER":"ईआर कॉल करें",
+  "Attach a photo":"फ़ोटो जोड़ें",
+  "Message Koby AI":"कोबी एआई को संदेश",
+  "Message":"संदेश",
+  "Listening… speak now":"सुन रहा हूँ… अब बोलें",
+  "Speak instead of typing":"टाइप करने के बजाय बोलें",
+  "Stop listening":"सुनना बंद करें",
+  "Send":"भेजें",
+  "Book a walk":"वॉक बुक करें",
+  "Track my order":"मेरा ऑर्डर ट्रैक करें",
+  "Shop supplies":"सामान खरीदें",
+  "Just browsing":"बस देख रहा हूँ",
+  "Who are the walkers?":"वॉकर कौन हैं?",
+  "Pick a boarding date":"बोर्डिंग की तारीख चुनें",
+  "What do I need for boarding?":"बोर्डिंग के लिए क्या चाहिए?",
+  "My pet is vomiting":"मेरे पालतू को उल्टी हो रही है",
+  "My pet is itching a lot":"मेरे पालतू को बहुत खुजली हो रही है",
+  "Yes, it's an emergency":"हाँ, यह इमरजेंसी है",
+  "Just reading":"बस पढ़ रहा हूँ",
+  "Delivery or collect?":"डिलीवरी या खुद ले जाएँ?",
+  "Can I cancel later?":"क्या मैं बाद में रद्द कर सकता हूँ?",
+  "Book a clinic check-up":"क्लिनिक जाँच बुक करें",
+  "Is there a café?":"क्या कैफ़े है?",
+  "What is a Pet Health Profile?":"पेट हेल्थ प्रोफ़ाइल क्या है?",
+  "Show chicken-free food":"चिकन-रहित खाना दिखाएँ",
+  "Is it in stock at a Pet Care Centre?":"क्या यह पेट केयर सेंटर में उपलब्ध है?",
+  "Talk to a person":"किसी व्यक्ति से बात करें",
+  "Open boarding updates":"बोर्डिंग अपडेट खोलें",
+  "Open the franchise page":"फ्रेंचाइज़ पेज खोलें",
+  "Open the shop":"शॉप खोलें",
+  "Book grooming":"ग्रूमिंग बुक करें",
+  "Book a check-up":"जाँच बुक करें",
+  "Book a vaccine":"टीका बुक करें",
+  "See all Pet Care Centres":"सभी पेट केयर सेंटर्स देखें",
+  "Open my bookings":"मेरी बुकिंग खोलें",
+  "No, just asking":"नहीं, बस पूछ रहा हूँ",
+  "Yes, talk to a person":"हाँ, किसी व्यक्ति से बात करें",
+  "No, show me options":"नहीं, विकल्प दिखाएँ",
+  "Ask a vet":"पशु चिकित्सक से पूछें",
+  "Show lamb and rice food":"लैम्ब और राइस खाना दिखाएँ",
+  "Add to cart":"कार्ट में डालें",
+  "Open tracking":"ट्रैकिंग खोलें",
+  "Open the live map":"लाइव नक्शा खोलें",
+  "Open the booking":"बुकिंग खोलें",
+  "Add a pet":"पालतू जोड़ें",
+  "Open the Pet Health Profile":"पेट हेल्थ प्रोफ़ाइल खोलें",
+  "Today":"आज",
+  "2 to 3 days ago":"2 से 3 दिन पहले",
+  "A week or more":"एक हफ्ते या अधिक",
+  "Yes, normally":"हाँ, सामान्य रूप से",
+  "Less than usual":"सामान्य से कम",
+  "Not at all":"बिल्कुल नहीं",
+  "End chat with Ravi":"रवि के साथ चैट खत्म करें",
+  "Clinic slot today":"आज का क्लिनिक स्लॉट",
+  "Book the clinic":"क्लिनिक बुक करें",
+  "Paying":"भुगतान हो रहा है",
+  "Added to cart":"कार्ट में जोड़ दिया",
+  "Code sent. Use 1234":"कोड भेज दिया। 1234 इस्तेमाल करें",
+  "That code doesn't match. Try 1234":"कोड नहीं मिला। 1234 आज़माएँ",
+  "Signed in":"साइन इन हो गया",
+  "Enter a 10-digit mobile number":"10 अंकों का मोबाइल नंबर डालें",
+  "Describe what's going on first":"पहले बताएँ क्या हो रहा है",
+  "Add your pet's name":"अपने पालतू का नाम जोड़ें",
+  "Type the breed":"नस्ल लिखें",
+  "Choose a breed":"नस्ल चुनें",
+  "Added to your calendar":"कैलेंडर में जोड़ दिया",
+  "Got it. We won't ask again for 30 days":"ठीक है। 30 दिन तक फिर नहीं पूछेंगे",
+  "We'll remind you after your next booking":"अगली बुकिंग के बाद याद दिलाएँगे",
+  "Thanks for rating":"रेटिंग के लिए धन्यवाद",
+  "Thanks. We'll follow up":"धन्यवाद। हम फ़ॉलो अप करेंगे",
+  "Tip of ₹50 added. Thank you":"₹50 टिप जोड़ दी। धन्यवाद",
+  "Pet Health Profile saved":"पेट हेल्थ प्रोफ़ाइल सहेज ली",
+  "Record sent to the ER team":"रिकॉर्ड ईआर टीम को भेज दिया",
+  "Add your name":"अपना नाम जोड़ें",
+  "Enter a valid email":"सही ईमेल डालें",
+  "Add the city you'd like to open in":"वह शहर जोड़ें जहाँ खोलना चाहते हैं",
+  "Enquiry sent":"पूछताछ भेज दी",
+  "Allow microphone access to talk to Koby AI":"कोबी एआई से बात करने के लिए माइक्रोफ़ोन की अनुमति दें",
+  "Didn't hear anything. Tap the mic and try again":"कुछ सुनाई नहीं दिया। माइक टैप करके फिर कोशिश करें",
+  "Voice input stopped. You can type instead":"आवाज़ इनपुट रुक गया। आप टाइप कर सकते हैं",
+  "Voice input isn't available right now":"आवाज़ इनपुट अभी उपलब्ध नहीं",
+  "Reset the demo? This clears sign-in, pets, bookings, orders and chat.":"डेमो रीसेट करें? इससे साइन-इन, पालतू, बुकिंग, ऑर्डर और चैट मिट जाएँगे।",
+  "A Cavalier King Charles Spaniel":"एक कैवेलियर किंग चार्ल्स स्पैनियल",
+  "A Golden Retriever turning around":"मुड़ता हुआ गोल्डन रिट्रीवर",
+  "Rate from 1 to 5":"1 से 5 तक रेट करें",
+  "Last Tuesday, 6:30 pm":"पिछले मंगलवार, शाम 6:30",
+  "Delivered to home":"घर पर डिलीवर",
+  "28 Sep":"28 सितंबर",
+  "Friendly, pulls on the leash":"दोस्ताना, पट्टा खींचता है",
+  "Lamb and rice dry food, twice a day":"लैम्ब और राइस सूखा खाना, दिन में दो बार",
+  "Skin check for mild itch. Medicated shampoo for two weeks.":"हल्की खुजली की जाँच। दो हफ्ते तक दवा वाला शैम्पू।",
+  "Koby Hauz Khas clinic":"कोबी हौज़ खास क्लिनिक",
+  "2 hrs":"2 घंटे",
+  "Photo attached":"फ़ोटो जोड़ दी",
+  "Looking at walks? I can book one right here in the chat.":"वॉक देख रहे हैं? मैं यहीं चैट में बुक कर सकता हूँ।",
+  "If something's wrong, tell me what's happening and I'll get you to the right care.":"अगर कुछ गड़बड़ है, बताएँ क्या हो रहा है, मैं सही देखभाल तक पहुँचाऊँगा।",
+  "Is this an emergency right now? If yes, call the ER first.":"क्या अभी इमरजेंसी है? अगर हाँ, पहले ईआर को कॉल करें।",
+  "Need a hand with your cart?":"कार्ट में मदद चाहिए?",
+  "Stuck at checkout? Ask me about payment, cancellations or the Pet Health Profile.":"चेकआउट पर अटक गए? भुगतान, रद्दीकरण या पेट हेल्थ प्रोफ़ाइल के बारे में पूछें।",
+  "The nearest Pet Care Centre is Koby Hauz Khas, 1.2 km away, open until 10 pm. Green Park, Malviya Nagar and Vasant Vihar are close too.":"सबसे नज़दीकी पेट केयर सेंटर कोबी हौज़ खास है, 1.2 किमी दूर, रात 10 बजे तक खुला। ग्रीन पार्क, मालवीय नगर और वसंत विहार भी पास हैं।",
+  "A basic profile is enough to book. Want to know what a Pet Health Profile adds?":"बुक करने के लिए बुनियादी प्रोफ़ाइल काफ़ी है। जानना चाहेंगे पेट हेल्थ प्रोफ़ाइल क्या जोड़ती है?",
+  "I'll post updates here as they happen.":"जैसे-जैसे अपडेट होंगे, मैं यहाँ लिखता रहूँगा।",
+  "There's no boarding stay booked right now.":"अभी कोई बोर्डिंग बुक नहीं है।",
+  "You can run a Koby Pet Care Centre in your city. The franchise page shows the store layout and space needed, and has a form to reach the Koby Corporate Franchising Group.":"आप अपने शहर में कोबी पेट केयर सेंटर चला सकते हैं। फ्रेंचाइज़ पेज पर स्टोर का लेआउट और जगह की ज़रूरत है, और कोबी कॉर्पोरेट फ्रेंचाइज़िंग ग्रुप तक फ़ॉर्म भी।",
+  "Koby is adding that next. In the shop, pick who you're shopping for to see everything we offer and what's live today.":"कोबी यह आगे जोड़ रहा है। शॉप में चुनें किसके लिए खरीद रहे हैं, ताकि दिखे क्या उपलब्ध है और आज क्या लाइव है।",
+  "Arjun (★ 4.9, 312 walks) is calm with reactive and large dogs. Meera (★ 4.8, 205 walks) is great with puppies and seniors. Both are background-checked and trained in pet first aid.":"अर्जुन (★ 4.9, 312 वॉक) उत्तेजित और बड़े कुत्तों के साथ शांत हैं। मीरा (★ 4.8, 205 वॉक) पिल्लों और बुज़ुर्ग पालतू जानवरों के साथ अच्छी हैं। दोनों की जाँच हुई है और पेट फ़र्स्ट एड की ट्रेनिंग है।",
+  "Grooming and spa is at the Koby 24/7 Emergency Hospital, from ₹999: bath, trim, nails and a blow-dry.":"ग्रूमिंग और स्पा कोबी 24/7 इमरजेंसी अस्पताल में है, ₹999 से: नहलाना, काटना, नाखून और ड्राय।",
+  "Koby Hauz Khas is 1.2 km away and open until 10 pm. There are also Pet Care Centres in Green Park, Malviya Nagar and Vasant Vihar. It has a clinic, café, ice cream bar, day stay and shop. Clinic slots today at 4:00 pm and 6:30 pm.":"कोबी हौज़ खास 1.2 किमी दूर है और रात 10 बजे तक खुला है। ग्रीन पार्क, मालवीय नगर और वसंत विहार में भी पेट केयर सेंटर्स हैं। यहाँ क्लिनिक, कैफ़े, आइसक्रीम बार, डे स्टे और शॉप है। आज क्लिनिक स्लॉट शाम 4:00 और 6:30 पर हैं।",
+  "Pet Care Centres are open 8 am to 10 pm (Vasant Vihar 9 am to 9 pm). The Koby 24/7 Emergency Hospital never closes.":"पेट केयर सेंटर्स सुबह 8 बजे से रात 10 बजे तक खुले हैं (वसंत विहार सुबह 9 से रात 9)। कोबी 24/7 इमरजेंसी अस्पताल कभी बंद नहीं होता।",
+  "You can cancel free up to 2 hours before. After that, half the price is charged. Reschedule or cancel from Bookings and orders.":"2 घंटे पहले तक मुफ़्त रद्द कर सकते हैं। उसके बाद आधी कीमत लगती है। बुकिंग और ऑर्डर से बदलें या रद्द करें।",
+  "The Koby 24/7 Emergency Hospital is about 12 minutes by car. Is this an emergency right now?":"कोबी 24/7 इमरजेंसी अस्पताल कार से लगभग 12 मिनट है। क्या अभी इमरजेंसी है?",
+  "Sure. I'm here if you need anything.":"ठीक है। ज़रूरत हो तो मैं यहाँ हूँ।",
+  "Anytime.":"कभी भी।",
+  "I'm not getting this right. Want me to bring in someone from the Koby team?":"मैं इसे ठीक से समझ नहीं पा रहा। क्या मैं कोबी टीम के किसी व्यक्ति को लाऊँ?",
+  "I can help with walks, day boarding, vet calls, supplies, orders and Pet Care Centres. Which one?":"मैं वॉक, डे बोर्डिंग, पशु चिकित्सक कॉल, सामान, ऑर्डर और पेट केयर सेंटर्स में मदद कर सकता हूँ। कौन सा?",
+  "Go to the Koby 24/7 Emergency Hospital now. Call on the way so the team is ready.":"अभी कोबी 24/7 इमरजेंसी अस्पताल जाएँ। रास्ते में कॉल करें ताकि टीम तैयार हो।",
+  "Tell the ER team your pet's age, weight and any medicines when you call.":"कॉल करते समय ईआर टीम को पालतू की उम्र, वज़न और दवाएँ बताएँ।",
+  "I'm not a vet, but I can get you to one quickly.":"मैं पशु चिकित्सक नहीं हूँ, पर जल्दी किसी डॉक्टर तक पहुँचा सकता हूँ।",
+  "Two quick questions. When did it start?":"दो छोटे सवाल। यह कब शुरू हुआ?",
+  "You can talk to a Koby vet on video right now.":"आप अभी वीडियो पर कोबी पशु चिकित्सक से बात कर सकते हैं।",
+  "Free in about 6 minutes":"लगभग 6 मिनट में खाली",
+  "Most adult dogs do well on two measured meals a day, using the guide on the bag for their weight. Change foods gradually over about a week. Cats prefer several small meals.":"ज़्यादातर वयस्क कुत्तों को दिन में दो नापे हुए भोजन ठीक रहते हैं, बैग पर वज़न के हिसाब से। खाना लगभग एक हफ्ते में धीरे-धीरे बदलें। बिल्लियाँ कई छोटे भोजन पसंद करती हैं।",
+  "Every 4 to 6 weeks is enough for most dogs, more often if they roll in things. Use a pet shampoo; human shampoo dries their skin.":"ज़्यादातर कुत्तों के लिए 4 से 6 हफ्ते काफ़ी हैं, अगर वे गंदगी में लोटें तो ज़्यादा बार। पालतू शैम्पू इस्तेमाल करें; इंसानों का शैम्पू त्वचा सुखा देता है।",
+  "Short, frequent sessions with small treats work best. For pulling, stop when the leash goes tight and walk on when it's loose. A Koby walker can practise this on every walk.":"छोटे ट्रीट के साथ छोटे-छोटे सत्र सबसे अच्छे रहते हैं। खींचने पर, पट्टा कसते ही रुकें और ढीला होने पर चलें। कोबी वॉकर हर वॉक पर यह अभ्यास कर सकता है।",
+  "Brush with pet toothpaste a few times a week. Bad breath, red gums or dropping food are worth a vet check.":"हफ्ते में कुछ बार पालतू टूथपेस्ट से ब्रश करें। बदबू, लाल मसूड़े या खाना गिराना डॉक्टर को दिखाने लायक है।",
+  "Most dogs need 30 to 60 minutes of activity a day. Puppies, seniors and flat-faced breeds need shorter, gentler sessions.":"ज़्यादातर कुत्तों को दिन में 30 से 60 मिनट गतिविधि चाहिए। पिल्ले, बुज़ुर्ग और चपटी नाक वाली नस्लों को छोटे, हल्के सत्र चाहिए।",
+  "I'd skip this one: it contains chicken, and the pet is allergic. The lamb and rice food is chicken free.":"इसे छोड़ दें: इसमें चिकन है, और एलर्जी है। लैम्ब और राइस खाने में चिकन नहीं है।",
+  "You don't have any orders yet.":"आपके अभी कोई ऑर्डर नहीं हैं।",
+  "There's no walk booked right now.":"अभी कोई वॉक बुक नहीं है।",
+  "No upcoming bookings.":"कोई आने वाली बुकिंग नहीं।",
+  "A few popular picks:":"कुछ लोकप्रिय विकल्प:",
+  "A Pet Passport keeps vaccines, allergies, diet and vet visits in one place. It's optional: you can book everything without it. With it, bookings fill in, reminders arrive on time, and the ER sees the history on arrival.":"पेट पासपोर्ट टीके, एलर्जी, खान-पान और डॉक्टर की विज़िट एक जगह रखता है। यह वैकल्पिक है: बिना इसके भी सब बुक कर सकते हैं। इसके साथ बुकिंग भर जाती है, याद दिलाना समय पर आता है, और पहुँचते ही ईआर इतिहास देख लेता है।",
+  "Connecting you to the Koby team. Ravi usually replies in about 2 minutes, and he can see this conversation.":"आपको कोबी टीम से जोड़ रहा हूँ। रवि आमतौर पर लगभग 2 मिनट में जवाब देते हैं, और यह बातचीत देख सकते हैं।",
+  "Hi, I'm Ravi from Koby support. I've read the chat above. How can I help?":"नमस्ते, मैं कोबी सपोर्ट से रवि हूँ। मैंने ऊपर की चैट पढ़ ली है। मैं कैसे मदद करूँ?",
+  "You're back with the Koby AI. Anything else?":"आप फिर कोबी एआई के साथ हैं। और कुछ?",
+  "I've opened checkout with this walk filled in. Finish there, or keep chatting here; nothing will be lost.":"मैंने यह वॉक भरकर चेकआउट खोल दिया है। वहाँ पूरा करें, या यहाँ चैट जारी रखें; कुछ नहीं मिटेगा।",
+  "Checkout is open for the video consult. The vet will see this chat before the call starts.":"वीडियो परामर्श का चेकआउट खुला है। कॉल से पहले डॉक्टर यह चैट देखेंगे।",
+  "Added to your cart.":"आपके कार्ट में जोड़ दिया।",
+  "Sorry it wasn't great. I've asked the Koby team to call you within a day.":"अफ़सोस कि अच्छा नहीं रहा। मैंने कोबी टीम से कहा है कि एक दिन में आपको कॉल करें।",
+  "Thanks, I'm checking that now and will update you right here.":"धन्यवाद, मैं अभी जाँच रहा हूँ और यहीं अपडेट करूँगा।",
+  "Got the photo. The vet will see it with your description.":"फ़ोटो मिल गई। डॉक्टर इसे आपके विवरण के साथ देखेंगे।",
+  "from 312 walks":"312 वॉक से",
+  "walks":"वॉक",
+  "Which breed is your dog?":"आपके कुत्ते की नस्ल क्या है?",
+  "Which breed is your cat?":"आपकी बिल्ली की नस्ल क्या है?",
+  "Everything for pet parents":"पालतू माता-पिता के लिए सब कुछ",
+  "Popular for pet parents":"पालतू माता-पिता के लिए लोकप्रिय",
+  "Products for birds are on the way":"पक्षियों के उत्पाद आ रहे हैं",
+  "Products for rabbits are on the way":"खरगोशों के उत्पाद आ रहे हैं",
+  "Products for fish are on the way":"मछलियों के उत्पाद आ रहे हैं",
+  "Vets, clinics and the Koby ER already look after birds. Pick a service above.":"पशु चिकित्सक, क्लिनिक और कोबी ईआर पहले से पक्षियों की देखभाल करते हैं। ऊपर कोई सेवा चुनें।",
+  "Vets, clinics and the Koby ER already look after rabbits. Pick a service above.":"पशु चिकित्सक, क्लिनिक और कोबी ईआर पहले से खरगोशों की देखभाल करते हैं। ऊपर कोई सेवा चुनें।",
+  "Vets, clinics and the Koby ER already look after fish. Pick a service above.":"पशु चिकित्सक, क्लिनिक और कोबी ईआर पहले से मछलियों की देखभाल करते हैं। ऊपर कोई सेवा चुनें।",
+  "Sent to":"भेजा गया",
+  "Reference":"संदर्भ",
+  "paid":"भुगतान",
+  "For":"के लिए",
+  "Book":"बुक करें",
+  "How was it with":"कैसा रहा",
+  "You rated":"आपने रेट किया",
+  "out of 5.":"5 में से।",
+  "Thanks for telling us. Our team will call you within a day.":"बताने के लिए धन्यवाद। हमारी टीम एक दिन में कॉल करेगी।",
+  "Book":"बुक करें",
+  "again":"फिर",
+  "Add a tip":"टिप जोड़ें",
+  "Saved to the basic profile.":"बुनियादी प्रोफ़ाइल में सहेजा गया।",
+  "Your":"आपका",
+  "is credited at the visit.":"विज़िट पर जुड़ जाती है।",
+  "Small":"छोटा",
+  "Hygiene":"सफ़ाई",
+  "Beds":"बिस्तर",
+  "Walking":"वॉकिंग",
+  "Feeding":"खिलाना",
+  "Grooming":"ग्रूमिंग",
+  "All":"सभी",
+  "min":"मिनट",
+  "km":"किमी",
+  "a day":"प्रति दिन",
+  "a call":"प्रति कॉल",
+  "a night":"प्रति रात",
+  "From":"से",
+  "Pay per use":"हर बार का भुगतान"
+};
+const HI_WORDS = [
+  ["सांस नहीं", "not breathing"],
+  ["साँस नहीं", "not breathing"],
+  ["साँस लेने में", "trouble breathing"],
+  ["दौरा", "seizure"],
+  ["बेहोश", "unconscious"],
+  ["बहुत खून", "bleeding heavily"],
+  ["खून बह", "bleeding a lot"],
+  ["जहर", "poison"],
+  ["चॉकलेट खा", "ate chocolate"],
+  ["गाड़ी ने", "hit by"],
+  ["टक्कर", "hit by"],
+  ["पेट सूज", "swollen stomach"],
+  ["दम घुट", "choking"],
+  ["खड़ा नहीं", "cannot stand"],
+  ["उल्टी", "vomit"],
+  ["दस्त", "diarrhea"],
+  ["खुजली", "itching"],
+  ["खांसी", "cough"],
+  ["बुखार", "fever"],
+  ["वॉकर कौन", "who are the walkers"],
+  ["वॉक बुक", "book a walk"],
+  ["सैर बुक", "book a walk"],
+  ["बोर्डिंग", "boarding"],
+  ["पशु चिकित्सक", "vet"],
+  ["डॉक्टर", "vet"],
+  ["इमरजेंसी", "emergency"],
+  ["आपातकाल", "emergency"],
+  ["ऑर्डर", "track my order"],
+  ["कार्ट", "cart"],
+  ["फ्रेंचाइ", "franchise"],
+  ["ग्रूमिंग", "grooming"],
+  ["क्लिनिक", "clinic"],
+  ["टीका", "vaccine"],
+  ["आइसक्रीम", "ice cream"],
+  ["कैफे", "cafe"],
+  ["कैफ़े", "cafe"],
+  ["पासपोर्ट", "health profile"],
+  ["हेल्थ प्रोफ़ाइल", "health profile"],
+  ["हेल्थ प्रोफाइल", "health profile"],
+  ["रद्द", "cancel"],
+  ["कीमत", "how much"],
+  ["समय", "open hours"],
+  ["व्यक्ति से", "talk to a person"],
+  ["इंसान", "real person"],
+  ["धन्यवाद", "thank you"],
+  ["नमस्ते", "hello"],
+  ["हैलो", "hello"],
+  ["बिल्कुल नहीं", "not at all"],
+  ["सामान्य से कम", "less than usual"],
+  ["एक हफ्ते", "a week or more"],
+  ["वॉक", "walk"],
+  ["शॉप", "shop"],
+  ["दुकान", "shop"]
+];
+function i18nOn(){ return !!(LANG_FEATURE && typeof S !== "undefined" && S.lang === "hi"); }
+function ensureHiFont(){
+  if (document.getElementById("koby-hi-font")) return;
+  const link = document.createElement("link");
+  link.id = "koby-hi-font"; link.rel = "stylesheet";
+  link.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap";
+  document.head.appendChild(link);
+}
+function applyLang(){
+  const hi = i18nOn();
+  document.documentElement.lang = hi ? "hi" : "en";
+  document.title = hi ? "कोबी पेट केयर प्रोटोटाइप" : "Koby Pet Care prototype";
+  const skip = document.querySelector("a.skip");
+  if (skip) skip.textContent = hi ? "सामग्री पर जाएँ" : "Skip to content";
+  if (hi) ensureHiFont();
+}
+function translateList(str){
+  if (!str.includes(", ")) return null;
+  const parts = str.split(", ");
+  if (parts.length < 2 || parts.length > 6) return null;
+  if (parts.some(p => /[.!?]/.test(p) || p.length > 40)) return null;
+  let hit = 0;
+  const mapped = parts.map(p => {
+    if (Object.prototype.hasOwnProperty.call(HI, p)){ hit++; return HI[p]; }
+    return p;
+  });
+  if (!hit || (hit < 2 && hit < parts.length)) return null;
+  return mapped.join(", ");
+}
+function applyPhrase(s){
+  let m;
+  if ((m = s.match(/^What does (.+) need today\?$/))) return tx(m[1]) + " को आज क्या चाहिए?";
+  if ((m = s.match(/^A vetted Koby walker collects (.+) from home\. Follow the route live, and get a report with photos when the walk ends\.$/))) return "एक जाँचा हुआ कोबी वॉकर " + m[1] + " को घर से ले जाता है। रास्ता लाइव देखें, और वॉक खत्म होने पर फ़ोटो के साथ रिपोर्ट पाएँ।";
+  if ((m = s.match(/^(.+)'s walk is live$/))) return m[1] + " की सैर लाइव है";
+  if ((m = s.match(/^(.+)'s (.+) was due on (.+)\.$/))) return m[1] + " का " + tx(m[2]) + " " + m[3] + " को देय था।";
+  if ((m = s.match(/^ER vets will see (.+)'s full history the moment you arrive\.$/))) return "पहुँचते ही ईआर के डॉक्टर " + m[1] + " का पूरा इतिहास देख लेंगे।";
+  if ((m = s.match(/^From (₹[\d,]+)$/))) return m[1] + " से";
+  if ((m = s.match(/^(₹[\d,]+) a day$/))) return m[1] + " प्रति दिन";
+  if ((m = s.match(/^(₹[\d,]+) a call$/))) return m[1] + " प्रति कॉल";
+  if ((m = s.match(/^(₹[\d,]+) a night$/))) return m[1] + " प्रति रात";
+  if ((m = s.match(/^(\d+) min, (₹[\d,]+)$/))) return m[1] + " मिनट, " + m[2];
+  if ((m = s.match(/^(\d+) min$/))) return m[1] + " मिनट";
+  if ((m = s.match(/^([\d.]+) km$/))) return m[1] + " किमी";
+  if ((m = s.match(/^Check-up (₹[\d,]+)$/))) return "जाँच " + m[1];
+  if ((m = s.match(/^Pup cup (₹[\d,]+)$/))) return "पप कप " + m[1];
+  if ((m = s.match(/^★ ([\d.]+) from (\d+) walks$/))) return "★ " + m[1] + ", " + m[2] + " वॉक से";
+  if ((m = s.match(/^from (\d+) walks$/))) return m[1] + " वॉक से";
+  if ((m = s.match(/^(.+), ([\d.]+ km) away\. Open (.+)\.$/))) return tx(m[1]) + ", " + tx(m[2]) + " दूर। खुला " + tx(m[3]) + "।";
+  if ((m = s.match(/^Cart, (\d+) items?$/))) return "कार्ट, " + m[1] + " चीज़ें";
+  if ((m = s.match(/^(\d+) stars$/))) return m[1] + " स्टार";
+  if ((m = s.match(/^We'll let you know when (.+) launches$/))) return "जब " + tx(m[1]) + " शुरू होगा, हम बताएँगे";
+  if ((m = s.match(/^(.+) added$/))) return m[1] + " जोड़ दिया गया";
+  if ((m = s.match(/^Welcome back, (.+)$/))) return "वापसी पर स्वागत है, " + m[1];
+  if ((m = s.match(/^Cancel (.+)\? It's free up to 2 hours before\.$/))) return tx(m[1]) + " रद्द करें? 2 घंटे पहले तक मुफ़्त है।";
+  if ((m = s.match(/^Cancelled\. (₹[\d,]+) refunded to your payment method$/))) return "रद्द कर दिया। " + m[1] + " आपके भुगतान माध्यम में वापस होगा";
+  if ((m = s.match(/^Contains (.+)\. (.+) is allergic\.$/))) return "इसमें " + tx(m[1]) + " है। " + m[2] + " को एलर्जी है।";
+  if ((m = s.match(/^(₹[\d,]+) each$/))) return m[1] + " प्रति";
+  if ((m = s.match(/^Delivered to your door in 2 hours\. Free over (₹[\d,]+)\.$/))) return "2 घंटे में आपके दरवाज़े तक। " + m[1] + " से अधिक पर मुफ़्त।";
+  if ((m = s.match(/^About 2 hours\. (₹[\d,]+), free over (₹[\d,]+)\.$/))) return "लगभग 2 घंटे। " + m[1] + ", " + m[2] + " से अधिक पर मुफ़्त।";
+  if ((m = s.match(/^Delivery in about 2 hours, (₹[\d,]+), free over (₹[\d,]+)$/))) return "लगभग 2 घंटे में डिलीवरी, " + m[1] + ", " + m[2] + " से अधिक पर मुफ़्त";
+  if ((m = s.match(/^Free delivery over (₹[\d,]+), (₹[\d,]+) below that$/))) return m[1] + " से अधिक पर मुफ़्त डिलीवरी, उससे कम पर " + m[2];
+  if ((m = s.match(/^(\d+) min walk with (.+)$/))) return m[2] + " के साथ " + m[1] + " मिनट की सैर";
+  if ((m = s.match(/^(\d+) min walk$/))) return m[1] + " मिनट की सैर";
+  if ((m = s.match(/^(\d+) items from the Koby shop$/))) return "कोबी शॉप से " + m[1] + " चीज़ें";
+  if ((m = s.match(/^(.+) × (\d+)$/))) return tx(m[1]) + " × " + m[2];
+  if ((m = s.match(/^Everything for your (.+)$/))) return "आपके " + tx(m[1]) + " के लिए सब कुछ";
+  if ((m = s.match(/^Everything for (.+)$/))) return tx(m[1]) + " के लिए सब कुछ";
+  if ((m = s.match(/^Popular for your (.+)$/))) return "आपके " + tx(m[1]) + " के लिए लोकप्रिय";
+  if ((m = s.match(/^Popular for (.+)$/))) return tx(m[1]) + " के लिए लोकप्रिय";
+  if ((m = s.match(/^Hi (.+)! How's (.+) today\? (.+)$/))) return "नमस्ते " + m[1] + "! " + m[2] + " आज कैसा है? " + tx(m[3]);
+  if ((m = s.match(/^Hi! How's (.+) today\? (.+)$/))) return "नमस्ते! " + m[1] + " आज कैसा है? " + tx(m[2]);
+  if ((m = s.match(/^Hi (.+)! I'm Koby AI\. (.+)$/))) return "नमस्ते " + m[1] + "! मैं कोबी एआई हूँ। " + tx(m[2]);
+  if ((m = s.match(/^Hi! I'm Koby AI\. (.+)$/))) return "नमस्ते! मैं कोबी एआई हूँ। " + tx(m[1]);
+  if ((m = s.match(/^Questions about (.+)\? Ask away\.$/))) return m[1] + " के बारे में सवाल? पूछिए।";
+  if ((m = s.match(/^Heads up: (.+) contains (.+), and (.+)'s Pet Health Profile lists a (.+) allergy\. The lamb and rice food is chicken free\.$/))) return "ध्यान दें: " + tx(m[1]) + " में " + tx(m[2]) + " है, और " + m[3] + " की पेट हेल्थ प्रोफ़ाइल में " + tx(m[4]) + " की एलर्जी है। लैम्ब और राइस खाने में चिकन नहीं है।";
+  if ((m = s.match(/^Filled in from (.+)'s Pet Health Profile\.$/))) return m[1] + " की पेट हेल्थ प्रोफ़ाइल से भरा गया।";
+  if ((m = s.match(/^The vet will see (.+)'s Pet Health Profile before the call\.$/))) return "कॉल से पहले डॉक्टर " + m[1] + " की पेट हेल्थ प्रोफ़ाइल देखेंगे।";
+  if ((m = s.match(/^We'll check (.+)'s Pet Health Profile\.$/))) return "हम " + m[1] + " की पेट हेल्थ प्रोफ़ाइल जाँचेंगे।";
+  if ((m = s.match(/^For (.+)$/))) return m[1] + " के लिए";
+  if ((m = s.match(/^Book (.+)$/))) return tx(m[1]) + " बुक करें";
+  if ((m = s.match(/^Thanks, (.+)$/))) return "धन्यवाद, " + m[1];
+  if ((m = s.match(/^The Koby Corporate Franchising Group will call you on (.+) within 3 working days about opening in (.+)\.$/))) return "कोबी कॉर्पोरेट फ्रेंचाइज़िंग ग्रुप 3 कार्यदिवसों में " + m[1] + " पर कॉल करेगा, " + m[2] + " में खोलने के बारे में।";
+  if ((m = s.match(/^Send (.+)'s record ahead$/))) return m[1] + " का रिकॉर्ड पहले भेजें";
+  if ((m = s.match(/^✓ (.+)'s record has been sent to the ER team\.$/))) return "✓ " + m[1] + " का रिकॉर्ड ईआर टीम को भेज दिया गया है।";
+  if ((m = s.match(/^✓ (.+)'s record has been sent ahead to the ER team\.$/))) return "✓ " + m[1] + " का रिकॉर्ड ईआर टीम को पहले ही भेज दिया गया है।";
+  if ((m = s.match(/^(.+)'s walk report$/))) return m[1] + " की वॉक रिपोर्ट";
+  if ((m = s.match(/^(.+) is out with (.+)$/))) return m[1] + " " + m[2] + " के साथ बाहर है";
+  if ((m = s.match(/^(.+)'s walk, (.+)$/))) return m[1] + " की सैर, " + tx(m[2]);
+  if ((m = s.match(/^(.+)'s note$/))) return m[1] + " का नोट";
+  if ((m = s.match(/^(.+) was full of energy today\. Two pee breaks, one poo, drank water at the halfway point\. Lots of sniffing in the park\.$/))) return m[1] + " आज बहुत ऊर्जा से भरा था। दो पेशाब ब्रेक, एक मल, बीच में पानी पिया। पार्क में खूब सूँघा।";
+  if ((m = s.match(/^How was it with (.+)\?$/))) return m[1] + " के साथ कैसा रहा?";
+  if ((m = s.match(/^You rated (.+) (\d+) out of 5\.$/))) return "आपने " + m[1] + " को 5 में से " + m[2] + " दिए।";
+  if ((m = s.match(/^Book (.+) again$/))) return m[1] + " को फिर बुक करें";
+  if ((m = s.match(/^Call (.+)$/))) return m[1] + " को कॉल करें";
+  if ((m = s.match(/^(.+) will arrive at (.+)\. The map goes live when the walk starts\.$/))) return m[1] + " " + tx(m[2]) + " पर पहुँचेगा। वॉक शुरू होते ही नक्शा लाइव होगा।";
+  if ((m = s.match(/^(.+)'s day at (.+)$/))) return m[2] + " में " + m[1] + " का दिन";
+  if ((m = s.match(/^Looking after (.+) today$/))) return "आज " + m[1] + " की देखभाल";
+  if ((m = s.match(/^How is (.+) doing at boarding\?$/))) return m[1] + " बोर्डिंग में कैसा है?";
+  if ((m = s.match(/^Notes from (.+)$/))) return m[1] + " के नोट";
+  if ((m = s.match(/^vomiting continues past 24 hours, blood appears, or (.+) stops drinking\. Your (₹[\d,]+) is credited at the visit\.$/))) return "24 घंटे से ज़्यादा उल्टी रहे, खून दिखे, या " + m[1] + " पानी पीना बंद कर दे। आपकी " + m[2] + " विज़िट पर जुड़ जाएगी।";
+  if ((m = s.match(/^Saved to (.+)'s Pet Health Profile\.$/))) return m[1] + " की पेट हेल्थ प्रोफ़ाइल में सहेजा गया।";
+  if ((m = s.match(/^In a call with (.+)$/))) return m[1] + " के साथ कॉल पर";
+  if ((m = s.match(/^(.+) can see$/))) return m[1] + " देख सकते हैं";
+  if ((m = s.match(/^(.+)'s Pet Health Profile: vaccines, allergies, past visits$/))) return m[1] + " की पेट हेल्थ प्रोफ़ाइल: टीके, एलर्जी, पुरानी विज़िट";
+  if ((m = s.match(/^(.+)'s basic profile$/))) return m[1] + " की बुनियादी प्रोफ़ाइल";
+  if ((m = s.match(/^Joins in about 6 minutes\. Keep (.+) close and the room well lit\.$/))) return "लगभग 6 मिनट में जुड़ेंगे। " + m[1] + " को पास रखें और कमरा रोशन रखें।";
+  if ((m = s.match(/^Reference (.+), paid (₹[\d,]+)\.$/))) return "संदर्भ " + m[1] + ", भुगतान " + m[2] + "।";
+  if ((m = s.match(/^Create (.+)'s Pet Health Profile\?$/))) return m[1] + " की पेट हेल्थ प्रोफ़ाइल बनाएँ?";
+  if ((m = s.match(/^Next time, bookings fill themselves in, you'll get vaccine reminders, and the ER sees (.+)'s history on arrival\. It takes about a minute, and it's optional\.$/))) return "अगली बार बुकिंग अपने आप भर जाएगी, टीके की याद आएगी, और पहुँचते ही ईआर " + m[1] + " का इतिहास देख लेगा। लगभग एक मिनट लगता है, और यह वैकल्पिक है।";
+  if ((m = s.match(/^Hi (.+)$/))) return "नमस्ते " + m[1];
+  if ((m = s.match(/^Upcoming \((\d+)\)$/))) return "आने वाली (" + m[1] + ")";
+  if ((m = s.match(/^Past \((\d+)\)$/))) return "पिछली (" + m[1] + ")";
+  if ((m = s.match(/^Orders \((\d+)\)$/))) return "ऑर्डर (" + m[1] + ")";
+  if ((m = s.match(/^(.+)'s Pet Health Profile$/))) return m[1] + " की पेट हेल्थ प्रोफ़ाइल";
+  if ((m = s.match(/^Share this record with Koby vets, walkers, boarding staff and partner clinics, so they can care for (.+) safely\. You can change this any time\.$/))) return "यह रिकॉर्ड कोबी के डॉक्टरों, वॉकरों, बोर्डिंग स्टाफ़ और पार्टनर क्लिनिक के साथ साझा करें, ताकि वे " + m[1] + " की सुरक्षित देखभाल कर सकें। आप इसे कभी भी बदल सकते हैं।";
+  if ((m = s.match(/^Microchip (.+)$/))) return "माइक्रोचिप " + m[1];
+  if ((m = s.match(/^(.+), (.+) away\. Open (.+), every day\.$/))) return tx(m[1]) + ", " + tx(m[2]) + " दूर। हर दिन खुला " + tx(m[3]) + "।";
+  if ((m = s.match(/^Open (.+)\.$/))) return "खुला " + tx(m[1]) + "।";
+  if ((m = s.match(/^Allergic to (.+)\.$/))) return m[1] + " से एलर्जी।";
+  if ((m = s.match(/^A rabies vaccine within the last 12 months is needed\. We'll check (.+)'s Pet Health Profile\.$/))) return "पिछले 12 महीनों का रेबीज़ टीका चाहिए। हम " + m[1] + " की पेट हेल्थ प्रोफ़ाइल जाँचेंगे।";
+  if ((m = s.match(/^A rabies vaccine within the last 12 months is needed\. Add a photo of the vaccine card at checkout, or show it at drop-off\.$/))) return "पिछले 12 महीनों का रेबीज़ टीका चाहिए। चेकआउट पर वैक्सीन कार्ड की फ़ोटो जोड़ें, या छोड़ते समय दिखाएँ।";
+  if ((m = s.match(/^Sent to (.+)\. $/))) return m[1] + " पर भेजा गया। ";
+  if ((m = s.match(/^Is (.+) right for (.+)\?$/))) return "क्या " + tx(m[1]) + " " + m[2] + " के लिए सही है?";
+  if ((m = s.match(/^(.+), ★ ([\d.]+), (\d+) walks$/))) return m[1] + ", ★ " + m[2] + ", " + m[3] + " वॉक";
+  if ((m = s.match(/^Review and pay (₹[\d,]+)$/))) return "देखें और " + m[1] + " भुगतान करें";
+  if ((m = s.match(/^Done\. (.+) for (.+) is confirmed, reference (.+)\.$/))) return "हो गया। " + tx(m[1]) + ", " + m[2] + " के लिए पक्का, संदर्भ " + m[3] + "।";
+  if ((m = s.match(/^Done\. (.+) is confirmed, reference (.+)\.$/))) return "हो गया। " + tx(m[1]) + " पक्का, संदर्भ " + m[2] + "।";
+  if ((m = s.match(/^I'm sorry (.+) isn't feeling well\. I'm not a vet, but I can get you to one quickly\. (.+)Two quick questions\. When did it start\?$/))) return "अफ़सोस कि " + m[1] + " ठीक महसूस नहीं कर रहा। मैं पशु चिकित्सक नहीं हूँ, पर जल्दी किसी डॉक्टर तक पहुँचा सकता हूँ। " + m[2] + "दो छोटे सवाल। यह कब शुरू हुआ?";
+  if ((m = s.match(/^I'm sorry (.+) isn't feeling well\. I'm not a vet, but I can get you to one quickly\. Two quick questions\. When did it start\?$/))) return "अफ़सोस कि " + m[1] + " ठीक महसूस नहीं कर रहा। मैं पशु चिकित्सक नहीं हूँ, पर जल्दी किसी डॉक्टर तक पहुँचा सकता हूँ। दो छोटे सवाल। यह कब शुरू हुआ?";
+  if ((m = s.match(/^I can see (.+) is (.+), (.+), allergic to (.+)\. $/))) return "मैं देख रहा हूँ " + m[1] + " " + m[2] + " का है, " + m[3] + ", " + m[4] + " से एलर्जी है। ";
+  if ((m = s.match(/^Is (.+) eating and drinking normally\?$/))) return "क्या " + m[1] + " सामान्य रूप से खा-पी रहा है?";
+  if ((m = s.match(/^(.+) should be seen today\. A video vet can check now, or book the clinic for this afternoon\.$/))) return m[1] + " को आज दिखाना चाहिए। वीडियो डॉक्टर अभी देख सकते हैं, या आज दोपहर का क्लिनिक बुक करें।";
+  if ((m = s.match(/^A Koby vet can look at this on a video call\. I'll send them what you've told me, so you won't need to repeat it\.$/))) return "कोबी का पशु चिकित्सक इसे वीडियो कॉल पर देख सकता है। मैं उन्हें बताऊँगा जो आपने कहा, दोहराना नहीं पड़ेगा।";
+  if ((m = s.match(/^Day boarding is (₹[\d,]+) a day at any Pet Care Centre or the Koby 24\/7 Emergency Hospital, with photo updates through the day\.$/))) return "डे बोर्डिंग किसी भी पेट केयर सेंटर या कोबी 24/7 इमरजेंसी अस्पताल में " + m[1] + " प्रति दिन है, दिन भर फ़ोटो अपडेट के साथ।";
+  if ((m = s.match(/^Day boarding needs a rabies vaccine from the last 12 months\. (.+)'s Pet Health Profile shows rabies given 12 Nov 2025, so you're set\.$/))) return "डे बोर्डिंग के लिए पिछले 12 महीनों का रेबीज़ टीका चाहिए। " + m[1] + " की पेट हेल्थ प्रोफ़ाइल में रेबीज़ 12 नवंबर 2025 को लगा है, तो आप तैयार हैं।";
+  if ((m = s.match(/^Day boarding needs a rabies vaccine from the last 12 months\. You can upload a photo of the vaccine card at checkout, or show it at drop-off\.$/))) return "डे बोर्डिंग के लिए पिछले 12 महीनों का रेबीज़ टीका चाहिए। चेकआउट पर कार्ड की फ़ोटो अपलोड कर सकते हैं, या छोड़ते समय दिखा सकते हैं।";
+  if ((m = s.match(/^Order online and collect at Koby Hauz Khas in about 30 minutes, free\. Or get it delivered in about 2 hours, free over (₹[\d,]+)\.$/))) return "ऑनलाइन ऑर्डर करें और लगभग 30 मिनट में कोबी हौज़ खास से ले जाएँ, मुफ़्त। या लगभग 2 घंटे में डिलीवरी, " + m[1] + " से अधिक पर मुफ़्त।";
+  if ((m = s.match(/^Walks: (₹[\d,]+) for 30 min, (₹[\d,]+) for 45, (₹[\d,]+) for 60\. Day boarding: (₹[\d,]+)\. Video vet: (₹[\d,]+) a call\. Clinic check-up: (₹[\d,]+)\. All pay per use\. Koby Club membership is optional\.$/))) return "वॉक: 30 मिनट " + m[1] + ", 45 के लिए " + m[2] + ", 60 के लिए " + m[3] + "। डे बोर्डिंग: " + m[4] + "। वीडियो डॉक्टर: " + m[5] + " प्रति कॉल। क्लिनिक जाँच: " + m[6] + "। सब पे-पर-यूज़। कोबी क्लब सदस्यता वैकल्पिक है।";
+  if ((m = s.match(/^Hello! What can I help (.+) with\?$/))) return "नमस्ते! " + m[1] + " के लिए मैं क्या मदद करूँ?";
+  if ((m = s.match(/^Hello! What can I help with\?$/))) return "नमस्ते! मैं क्या मदद करूँ?";
+  if ((m = s.match(/^I'd skip this one: it contains (.+), and (.+) is allergic\. The lamb and rice food is chicken free\.$/))) return "इसे छोड़ दें: इसमें " + tx(m[1]) + " है, और " + m[2] + " को एलर्जी है। लैम्ब और राइस खाने में चिकन नहीं है।";
+  if ((m = s.match(/^This is made for (.+)s, so it's not a match for (.+)\.$/))) return "यह " + tx(m[1]) + " के लिए बना है, इसलिए " + m[2] + " के लिए सही नहीं।";
+  if ((m = s.match(/^(.+) looks fine for (.+)\. Nothing in it matches the allergies in the Pet Health Profile\.$/))) return tx(m[1]) + " " + m[2] + " के लिए ठीक लगता है। इसमें पेट हेल्थ प्रोफ़ाइल की एलर्जी से कुछ नहीं मिलता।";
+  if ((m = s.match(/^(.+) looks fine for (.+)\. If your pet has allergies, check the ingredients on the product page\.$/))) return tx(m[1]) + " " + m[2] + " के लिए ठीक लगता है। अगर एलर्जी है, उत्पाद पेज पर सामग्री देखें।";
+  if ((m = s.match(/^Here's a walk for (.+)\. Pick a length and time\.$/))) return (m[1] === "your pet" ? "आपके पालतू" : m[1]) + " के लिए एक वॉक। अवधि और समय चुनें।";
+  if ((m = s.match(/^Your order (.+): $/))) return "आपका ऑर्डर " + m[1] + ": ";
+  if ((m = s.match(/^(.+) is out with (.+), about ([\d.]+) km so far\.$/))) return m[1] + " " + m[2] + " के साथ बाहर है, अब तक लगभग " + m[3] + " किमी।";
+  if ((m = s.match(/^(.+) is booked for (.+)\.$/))) return tx(m[1]) + " " + tx(m[2]) + " के लिए बुक है।";
+  if ((m = s.match(/^You have (\d+) upcoming:$/))) return "आपकी " + m[1] + " आने वाली बुकिंग हैं:";
+  if ((m = s.match(/^Picks for (.+), without anything in the allergy list:$/))) return m[1] + " के लिए विकल्प, एलर्जी सूची की कोई चीज़ नहीं:";
+  if ((m = s.match(/^Picks for (.+):$/))) return m[1] + " के लिए विकल्प:";
+  if ((m = s.match(/^(.+)'s Pet Health Profile is up to date except the deworming, which was due on 2 Sep\.$/))) return m[1] + " की पेट हेल्थ प्रोफ़ाइल अप टू डेट है, सिवाय कृमिनाशक के, जो 2 सितंबर को देय था।";
+  if ((m = s.match(/^Kavya says (.+) is doing well: played in the yard this morning, ate all of lunch, and is resting now\. Want me to ask her something specific\?$/))) return "काव्या कहती हैं " + m[1] + " ठीक है: आज सुबह आँगन में खेला, दोपहर का खाना पूरा खाया, और अभी आराम कर रहा है। क्या मैं उनसे कुछ खास पूछूँ?";
+  if ((m = s.match(/^Got it\. If you talk to a vet, I'll pass this photo along with (.+)'s details\.$/))) return "मिल गया। अगर आप डॉक्टर से बात करेंगे, मैं यह फ़ोटो " + m[1] + " के विवरण के साथ भेज दूँगा।";
+  if ((m = s.match(/^Want to check dates for day boarding\? It's (₹[\d,]+) a day\.$/))) return "डे बोर्डिंग की तारीखें देखनी हैं? " + m[1] + " प्रति दिन।";
+  if ((m = s.match(/^(₹[\d,]+) per call\. If the vet asks to see your pet and you visit a Pet Care Centre or the ER within 48 hours, it's credited against that visit\.$/))) return m[1] + " प्रति कॉल। अगर डॉक्टर पालतू को बुलवाएँ और आप 48 घंटे में पेट केयर सेंटर या ईआर जाएँ, तो यह राशि उस विज़िट में जुड़ जाती है।";
+  if ((m = s.match(/^(.+) per call, credited if you're seen at a Pet Care Centre or the ER within 48 hours\.$/))) return m[1] + " प्रति कॉल, 48 घंटे में पेट केयर सेंटर या ईआर पर दिखाने पर जुड़ जाती है।";
+  let t = s;
+  t = t.replace(/How's ([^?]+?) today\?/g, "$1 आज कैसा है?");
+  t = t.replace(/I can book walks, boarding and vet calls, track orders, and get you to the ER fast if it's urgent\./g, "मैं वॉक, बोर्डिंग और पशु चिकित्सक की कॉल बुक कर सकता हूँ, ऑर्डर ट्रैक कर सकता हूँ, और इमरजेंसी हो तो जल्दी ईआर तक पहुँचा सकता हूँ।");
+  t = t.replace(/₹([\d,]+) a day/g, "₹$1 प्रति दिन");
+  t = t.replace(/₹([\d,]+) a call/g, "₹$1 प्रति कॉल");
+  t = t.replace(/₹([\d,]+) a night/g, "₹$1 प्रति रात");
+  t = t.replace(/\b(\d+) min\b/g, "$1 मिनट");
+  t = t.replace(/\b([\d.]+) km\b/g, "$1 किमी");
+  t = t.replace(/\b(\d+) walks\b/g, "$1 वॉक");
+  return t;
+}
+const HI_LONG = Object.keys(HI).filter(k => k.length >= 20).sort((a, b) => b.length - a.length);
+let txDepth = 0;
+function tx(en){
+  if (!i18nOn() || en == null) return en;
+  const str = String(en);
+  if (!/[A-Za-z]/.test(str)) return str;
+  if (Object.prototype.hasOwnProperty.call(HI, str)) return HI[str];
+  const titled = str.charAt(0).toUpperCase() + str.slice(1);
+  if (titled !== str && Object.prototype.hasOwnProperty.call(HI, titled)) return HI[titled];
+  if (txDepth > 4) return str;
+  txDepth++;
+  try {
+    const listed = translateList(str);
+    if (listed) return listed;
+    let out = applyPhrase(str);
+    for (let i = 0; i < HI_LONG.length; i++){
+      const key = HI_LONG[i];
+      if (out.includes(key)) out = out.split(key).join(HI[key]);
+    }
+    return out;
+  } finally { txDepth--; }
+}
+function trText(s){
+  if (!i18nOn() || !s || !/[A-Za-z]/.test(s)) return s;
+  const m = s.match(/^(\s*(?:\/\s*)?)(\S(?:[\s\S]*\S)?)(\s*)$/);
+  if (!m) return s;
+  const core = tx(m[2]);
+  if (core === m[2]) return s;
+  return m[1] + core + m[3];
+}
+function trAttrs(el){
+  if (!el || !el.getAttribute || el.closest("[data-no-i18n]")) return;
+  ["aria-label", "alt", "placeholder", "title"].forEach(attr => {
+    if (!el.hasAttribute(attr) && !el.hasAttribute("data-en-" + attr)) return;
+    const key = "data-en-" + attr;
+    if (!el.hasAttribute(key)) el.setAttribute(key, el.getAttribute(attr));
+    const en = el.getAttribute(key);
+    const next = i18nOn() ? trText(en) : en;
+    if (el.getAttribute(attr) !== next) el.setAttribute(attr, next);
+  });
+}
+function trRoot(root){
+  if (!root) return;
+  if (!i18nOn()){
+    trAttrs(root);
+    root.querySelectorAll("[data-en-aria-label],[data-en-alt],[data-en-placeholder],[data-en-title]").forEach(trAttrs);
+    return;
+  }
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node){
+      const el = node.parentElement;
+      if (!el || el.closest("[data-no-i18n]")) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const n of nodes){
+    const next = trText(n.nodeValue);
+    if (next !== n.nodeValue) n.nodeValue = next;
+  }
+  trAttrs(root);
+  root.querySelectorAll("[aria-label],[alt],[placeholder],[title]").forEach(trAttrs);
+}
+function toIntent(s){
+  if (!i18nOn()) return s;
+  const str = String(s == null ? "" : s);
+  if (!/[\u0900-\u097F]/.test(str)) return s;
+  let extra = "";
+  for (let i = 0; i < HI_WORDS.length; i++){
+    if (str.includes(HI_WORDS[i][0])) extra += " " + HI_WORDS[i][1];
+  }
+  return extra ? str + extra : s;
+}
+function loadLang(){
+  S.lang = "en";
+  if (!LANG_FEATURE) return;
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved === "hi" || saved === "en") S.lang = saved;
+  } catch (err) {}
+}
+loadLang();
+
 const hasPassport = () => !!(pet() && pet().passport);
 function petSrc(p){ return p && (p.photo || IMG[p.img]) || IMG.p_indie; }
 function defaultPetImg(species, breed){
@@ -844,7 +2042,7 @@ function dateStrip(sel, key){
     h += `<button class="date ${sel === i ? "on" : ""}" data-a="pick" data-v="${key}.date:${i}" role="option" aria-selected="${sel === i}"><small>${i === 0 ? "Today" : d.toLocaleDateString("en-IN", {weekday:"short"})}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString("en-IN", {month:"short"})}</small></button>`; }
   return h + "</div>";
 }
-function toast(t){ const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2400); }
+function toast(t){ const el = $("#toast"); el.textContent = tx(t); el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2400); }
 
 /* ---------- demo user ---------- */
 function signIn(phone){
@@ -895,9 +2093,11 @@ function renderBar(){
     <span class="spacer"></span>
     <a class="erbtn" href="#/emergency"><span class="pulse"></span>ER<span class="lbl-long">&nbsp;24/7</span></a>
     ${p ? `<a class="petpill" href="#/pets" title="Active pet"><img src="${petSrc(p)}" alt=""><span>${esc(p.name)}</span></a>` : ""}
+    ${LANG_FEATURE ? `<button type="button" class="langbtn" data-a="lang" data-no-i18n="1" aria-label="${S.lang === "hi" ? "अंग्रेज़ी में देखें" : "Switch to Hindi"}">${S.lang === "hi" ? "English" : "हिंदी"}</button>` : ""}
     <a class="iconbtn" href="#/cart" aria-label="Cart, ${count} items">${I.cart}${count ? `<span class="badge">${count}</span>` : ""}</a>
     <a class="iconbtn" href="#/account" aria-label="Account">${I.user}</a>
     <button class="iconbtn menu-toggle" data-a="menu" aria-label="Menu" aria-expanded="${S.menu}">${I.menu}</button>`;
+  trRoot($("#bar"));
 }
 function renderFoot(){
   $("#foot").innerHTML = `
@@ -907,6 +2107,7 @@ function renderFoot(){
     <div><b>Services</b><a href="#/walking">Pet walking</a><a href="#/boarding">Day boarding</a><a href="#/vet">Vet teleconsult</a><a href="#/er">Koby 24/7 Emergency Hospital</a></div>
     <div><b>Shop and visit</b><a href="#/shop">Food, toys and supplies</a><a href="#/spokes">Find a Pet Care Centre Near Me</a><a href="#/book/groom">Grooming and spa</a><a href="#/franchise">Become a Koby franchisee</a></div>
     <div><b>You</b><a href="#/account">My Bookings</a><a href="#/pets">My Pets</a><a href="#/help">Help and FAQ</a></div>`;
+  trRoot($("#foot"));
 }
 
 /* ---------- pages ---------- */
@@ -1336,13 +2537,13 @@ function updWalk(b){
   if (!done) return;
   done.setAttribute("points", pts.map(x => x.join(",")).join(" "));
   dog.setAttribute("transform", `translate(${last[0]} ${last[1]})`);
-  $("#wDist").textContent = (2.4 * p).toFixed(1) + " km";
-  $("#wTime").textContent = Math.round(b.meta.dur * p) + " min";
+  $("#wDist").textContent = tx((2.4 * p).toFixed(1) + " km");
+  $("#wTime").textContent = tx(Math.round(b.meta.dur * p) + " min");
   const ev = WALK_EVENTS.filter(e => e[0] <= p);
   $("#wBreaks").textContent = ev.filter(e => /break/i.test(e[2])).length;
   const list = $("#wEvents"); if (list && list.children.length !== ev.length){
-    list.innerHTML = ev.slice().reverse().map(e => `<li><span class="ic">${e[1]}</span><span>${e[2]}</span></li>`).join("");
-    $("#wPhotos").innerHTML = ev.filter(e => e[3]).map(e => `<img src="${IMG[e[3]]}" alt="Walk photo">`).join("");
+    list.innerHTML = ev.slice().reverse().map(e => `<li><span class="ic">${e[1]}</span><span>${tx(e[2])}</span></li>`).join("");
+    $("#wPhotos").innerHTML = ev.filter(e => e[3]).map(e => `<img src="${IMG[e[3]]}" alt="${tx("Walk photo")}">`).join("");
   }
   if (p >= 1) finishWalk(b);
 }
@@ -1476,9 +2677,9 @@ P.franchise = () => {
         <label class="field"><span>Mobile number</span><input class="input" id="frPhone" inputmode="tel" autocomplete="tel" placeholder="98765 43210"></label>
         <label class="field"><span>Email</span><input class="input" id="frEmail" type="email" autocomplete="email"></label>
         <label class="field"><span>City</span><input class="input" id="frCity" placeholder="Gurugram"></label>
-        <label class="field"><span>Do you have a space?</span><select class="input" id="frSpace"><option>I own a space</option><option>I'm leasing a space</option><option>I'm still looking</option></select></label>
+        <label class="field"><span>Do you have a space?</span><select class="input" id="frSpace"><option value="I own a space">I own a space</option><option value="I'm leasing a space">I'm leasing a space</option><option value="I'm still looking">I'm still looking</option></select></label>
         <label class="field"><span>Area available</span><input class="input" id="frArea" placeholder="1,000 sq ft"></label>
-        <label class="field full"><span>Investment you're planning</span><select class="input" id="frInvest"><option>Under ₹50 lakh</option><option>₹50 lakh to ₹1 crore</option><option>Above ₹1 crore</option><option>I'd like to discuss</option></select></label>
+        <label class="field full"><span>Investment you're planning</span><select class="input" id="frInvest"><option value="Under ₹50 lakh">Under ₹50 lakh</option><option value="₹50 lakh to ₹1 crore">₹50 lakh to ₹1 crore</option><option value="Above ₹1 crore">Above ₹1 crore</option><option value="I'd like to discuss">I'd like to discuss</option></select></label>
         <label class="field full"><span>Anything else we should know?</span><textarea class="input" id="frMsg" placeholder="Your background, the neighbourhood, timelines"></textarea></label>
       </div>
       <button class="btn primary" data-a="franchise">Send enquiry</button><p class="hint">We use these details only to discuss a Koby franchise with you.</p></div>`;
@@ -1605,7 +2806,7 @@ function fsLayout(){
     [...o.children].forEach((el, i) => { el.classList.toggle("hot", i === best); el.setAttribute("aria-pressed", i === best); });
     FS.hot = best;
     const body = $("#catDetail"), cnt = $("#catCount");
-    if (body){ body.innerHTML = catDetail(best); body.classList.remove("in"); void body.offsetWidth; body.classList.add("in"); }
+    if (body){ body.innerHTML = catDetail(best); trRoot(body); body.classList.remove("in"); void body.offsetWidth; body.classList.add("in"); }
     if (cnt) cnt.innerHTML = `<b>0${best + 1}</b> / 0${CAT_N}`;
   }
 }
@@ -1632,12 +2833,14 @@ function fsStart(){ FS.hot = -1; fsLayout(); if (!FS.raf) FS.raf = requestAnimat
 
 /* ---------- router ---------- */
 function render(keep){
+  applyLang();
   clearInterval(S.timer);
   const [, r = "", id] = (location.hash || "#/").split("/");
   const page = {"":"home", walking:"walking", boarding:"boarding", vet:"vet", spokes:"spokes", spoke:"spoke", book:"book", er:"er", shop:"shop", product:"product", cart:"cart", checkout:"checkout", confirm:"confirm", track:"track", account:"account", pets:"pets", passport:"passport", help:"help", emergency:"emergency", franchise:"franchise"}[r] || "home";
   S.page = page; S.menu = false;
   renderBar();
   $("#main").innerHTML = P[page](id);
+  trRoot($("#main"));
   $("#launcher").style.display = page === "emergency" || S.chat.open ? "none" : "";
   if (!keep){ window.scrollTo(0, 0); }
   if (page === "track"){ const b = S.bookings.find(x => x.id === id);
@@ -1655,9 +2858,19 @@ A.catPrev = () => fsGoTo(FS.hot - 1);
 A.notify = id => toast(`We'll let you know when ${FEAT[id][0]} launches`);
 A.feat = id => { const c = CHOICES.find(x => x.id === id); S.shopGrp = c.grp; location.hash = "#/shop"; };
 
+A.lang = () => {
+  if (!LANG_FEATURE) return;
+  S.lang = S.lang === "hi" ? "en" : "hi";
+  try { localStorage.setItem(LANG_KEY, S.lang); } catch (err) {}
+  applyLang();
+  renderFoot();
+  renderLauncher();
+  render(true);
+  if (typeof C !== "undefined" && C.open) renderChat();
+};
 A.menu = () => { S.menu = !S.menu; renderBar(); };
 A.pick = v => { const [path, val] = v.split(/:(.+)/); const [grp, key] = path.split("."); S.sel[grp][key] = isNaN(val) ? val : Number(val); if (key === "date" && grp === "book") S.sel.book.time = null; render(true); };
-A.reset = () => { if (confirm("Reset the demo? This clears sign-in, pets, bookings, orders and chat.")) { location.hash = "#/"; location.reload(); } };
+A.reset = () => { if (confirm(tx("Reset the demo? This clears sign-in, pets, bookings, orders and chat."))) { location.hash = "#/"; location.reload(); } };
 function draft(d){ S.draft = d; S.otp = {phone:"", sent:false}; location.hash = "#/checkout"; }
 A.draftWalk = () => { const s = S.sel.walk, w = WALKERS.find(x => x.id === s.walker);
   draft({type:"walk", title:`${s.dur} min walk with ${w.name}`, when:`${dayLabel(s.date)}, ${s.time}`, where:"Pickup from home", lines:[[`${s.dur} min walk`, WALK_PRICE[s.dur]]], total:WALK_PRICE[s.dur], needsPet:true, meta:{walker:w.id, dur:s.dur}}); };
@@ -1668,7 +2881,7 @@ A.draftBook = k => { const b = BOOKABLE[k], s = S.sel.book, where = b.where === 
   draft({type:["checkup", "vaccine", "treatment"].includes(k) ? "clinic" : k, title:b.title, when:`${dayLabel(s.date)}, ${s.time}`, where, lines:[[b.title, b.price]], total:b.price, needsPet:true, meta:{}}); };
 A.draftCart = () => { const t = cartTotals(); draft({type:"cart", title:S.cart.length === 1 ? PRODUCTS.find(p => p.id === S.cart[0].id).name : `${S.cart.reduce((a, c) => a + c.q, 0)} items from the Koby shop`, when:S.delivery === "collect" ? "Ready in 30 minutes" : "In about 2 hours", where:S.delivery === "collect" ? "Collect at Koby Hauz Khas" : "Deliver to home",
   lines:[...S.cart.map(c => { const x = PRODUCTS.find(p => p.id === c.id); return [`${x.name} × ${c.q}`, x.price * c.q]; }), ["Delivery", t.del || "Free"]], total:t.total, needsPet:false, meta:{}}); };
-A.vetCheck = () => { const t = $("#concern").value.trim(); S.vetConcern = t; if (!t){ toast("Describe what's going on first"); return; } S.vetCheck = REDFLAG.test(t) ? "red" : "ok"; render(true); };
+A.vetCheck = () => { const t = $("#concern").value.trim(); S.vetConcern = t; if (!t){ toast("Describe what's going on first"); return; } S.vetCheck = (REDFLAG.test(t) || REDFLAG.test(toIntent(t))) ? "red" : "ok"; render(true); };
 A.add = id => { const q = S.page === "product" ? S.pq || 1 : 1; const c = S.cart.find(x => x.id === id); c ? c.q += q : S.cart.push({id, q}); S.pq = 1; toast("Added to cart"); render(true); };
 A.buyNow = id => { A.add(id); location.hash = "#/cart"; };
 A.pq = v => { S.pq = Math.max(1, (S.pq || 1) + Number(v)); render(true); };
@@ -1700,7 +2913,7 @@ A.savePet = ctx => { const name = $("#pfName").value.trim(); if (!name){ toast("
   S.pets.push(p); S.active = p.id; S.pf = null; S.petForm = false; toast(`${name} added`); render(true); };
 A.vaxDone = () => { S.draft.vaxDone = true; render(true); };
 A.vaxFile = () => {};
-A.pay = () => { const btn = $("#payBtn"); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Paying'; setTimeout(completePay, 1100); };
+A.pay = () => { const btn = $("#payBtn"); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + tx("Paying"); setTimeout(completePay, 1100); };
 function completePay(){
   const d = S.draft;
   let id;
@@ -1724,7 +2937,7 @@ A.orderNext = id => { const o = S.orders.find(x => x.id === id); o.status = Math
 A.rate = v => { const [id, n] = v.split(":"); const b = S.bookings.find(x => x.id === id); b.rating = Number(n); toast(n >= 4 ? "Thanks for rating" : "Thanks. We'll follow up"); if (n < 3) chatPush("bot", "Sorry it wasn't great. I've asked the Koby team to call you within a day.", []); render(true); if (S.chat.open) renderChat(); };
 A.tip = () => toast("Tip of ₹50 added. Thank you");
 A.rebook = w => { S.sel.walk.walker = w; location.hash = "#/walking"; };
-A.cancel = id => { const b = S.bookings.find(x => x.id === id); if (confirm(`Cancel ${b.title}? It's free up to 2 hours before.`)){ b.status = "cancelled"; toast(`Cancelled. ${rs(b.total)} refunded to your payment method`); render(true); } };
+A.cancel = id => { const b = S.bookings.find(x => x.id === id); if (confirm(tx(`Cancel ${b.title}? It's free up to 2 hours before.`))){ b.status = "cancelled"; toast(`Cancelled. ${rs(b.total)} refunded to your payment method`); render(true); } };
 A.tab = v => { S.acctTab = v; render(true); };
 A.signOut = () => { A.reset(); };
 A.activate = id => { S.active = id; render(true); };
@@ -1766,7 +2979,7 @@ function chatPush(who, html, chips, opts = {}){
   if (C.open) renderChat(); else renderLauncher();
 }
 function say(html, chips, opts){ C.typing = true; renderChat(); setTimeout(() => { C.typing = false; chatPush(opts && opts.agent ? "agent" : "bot", html, chips, opts); }, opts && opts.delay || 450); }
-function renderLauncher(){ const l = $("#launcher"); l.innerHTML = `${logoMark(true)}<span class="lbl">Ask Koby AI</span>${C.unread ? `<span class="badge" style="position:static">${C.unread}</span>` : ""}`; }
+function renderLauncher(){ const l = $("#launcher"); l.innerHTML = `${logoMark(true)}<span class="lbl">Ask Koby AI</span>${C.unread ? `<span class="badge" style="position:static">${C.unread}</span>` : ""}`; trRoot(l); }
 function renderChat(){
   const el = $("#chat"); if (!C.open){ el.classList.remove("open"); return; }
   const keep = $("#chatInput") ? $("#chatInput").value : "";
@@ -1780,6 +2993,7 @@ function renderChat(){
     <div class="composer"><button class="att" data-a="attach" aria-label="Attach a photo">${I.clip}</button><input id="chatInput" placeholder="${C.listening ? "Listening… speak now" : "Message Koby AI"}" aria-label="Message" autocomplete="off">${SPEECH ? `<button class="mic ${C.listening ? "on" : ""}" data-a="mic" aria-label="${C.listening ? "Stop listening" : "Speak instead of typing"}" aria-pressed="${!!C.listening}">${I.mic}</button>` : ""}<button class="send" data-a="send" aria-label="Send">${I.send}</button></div>
     <input type="file" id="chatFile" accept="image/*" hidden>`;
   $("#chatInput").value = keep;
+  trRoot(el);
   const m = $("#msgs"); m.scrollTop = m.scrollHeight; requestAnimationFrame(() => { m.scrollTop = m.scrollHeight; });
   $("#chatFile").onchange = () => { userSay("📎 Photo attached"); say(C.triage || C.mode === "agent" ? "Got the photo. The vet will see it with your description." : `Got it. If you talk to a vet, I'll pass this photo along with ${esc(petName())}'s details.`, C.chips); };
 }
@@ -1819,7 +3033,7 @@ const CARE = {food:[/(feed|food|diet|meal|how much.*eat)/, "Most adult dogs do w
 const QUESTION = /(how (much|often|many|long|do|to)|should i|what (food|should|is the best)|is it ok|can (he|she|i|my)|tips?\b|advice|\?)/i;
 
 function handle(raw){
-  const t = raw.trim(), low = t.toLowerCase(); if (!t) return;
+  const t = raw.trim(), low = toIntent(t).toLowerCase(); if (!t) return;
   const p = pet(), name = esc(petName());
   if (REDFLAG.test(low)) return emergency();
   if (C.mode === "agent"){
@@ -1879,7 +3093,7 @@ function triageStep(ans){
   const tr = C.triage;
   if (tr.step === 1){ tr.since = ans; tr.step = 2; return say(`Is ${esc(petName())} eating and drinking normally?`, ["Yes, normally", "Less than usual", "Not at all"]); }
   tr.eating = ans; C.triage = null;
-  const urgent = /not at all/i.test(ans) || /week/i.test(tr.since);
+  const urgent = /not at all/i.test(toIntent(ans)) || /week/i.test(toIntent(tr.since));
   vetOffer(urgent ? `${esc(petName())} should be seen today. A video vet can check now, or book the clinic for this afternoon.` : "A Koby vet can look at this on a video call. I'll send them what you've told me, so you won't need to repeat it.", urgent);
 }
 function vetOffer(lead, urgent){
@@ -1941,7 +3155,7 @@ function passportChat(){
 const SPEECH = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 A.mic = () => {
   if (C.listening){ if (C.rec) C.rec.stop(); return; }
-  const r = new SPEECH(); r.lang = "en-IN"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
+  const r = new SPEECH(); r.lang = i18nOn() ? "hi-IN" : "en-IN"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
   let heard = "";
   r.onresult = e => { let t = ""; for (const res of e.results) t += res[0].transcript; heard = t; const i = $("#chatInput"); if (i) i.value = t; };
   r.onerror = e => { heard = ""; toast(e.error === "not-allowed" || e.error === "service-not-allowed" ? "Allow microphone access to talk to Koby AI" : e.error === "no-speech" ? "Didn't hear anything. Tap the mic and try again" : "Voice input stopped. You can type instead"); };
